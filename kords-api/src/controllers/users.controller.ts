@@ -60,6 +60,7 @@ export const updateUser = async (req: Request, res: Response) => {
 
 export const updatePassword = async (req: Request, res: Response) => {
     try {
+        //const { id } = req.user.id;
         const { id } = req.params;
 
         if (typeof id != "string") {

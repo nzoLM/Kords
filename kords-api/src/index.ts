@@ -11,6 +11,6 @@ app.use(express.json())
 
 // ... vos routes API REST iront ici
 
-// app.listen(5558, () =>
-//   console.log('REST API server ready at: http://localhost:5558'),
-// )
+app.listen(5558, () =>
+  console.log('REST API server ready at: http://localhost:5558'),
+)
