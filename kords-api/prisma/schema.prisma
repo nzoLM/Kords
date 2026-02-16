@@ -20,6 +20,7 @@ datasource db {
 }
 
 
+// ============ UTILISATEURS ============
 model User {
   id              String    @id @default(uuid())
   email           String    @unique
@@ -34,6 +35,7 @@ model User {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
+  // Relations
   tastes          UserTaste[]
   posts           Post[]
   comments        Comment[]
@@ -49,6 +51,7 @@ model User {
   @@index([latitude, longitude])
 }
 
+// ============ GOÛTS MUSICAUX ============
 model MusicalGenre {
   id          String      @id @default(uuid())
   name        String      @unique
@@ -78,11 +81,13 @@ model UserTaste {
   @@unique([userId, artistId])
 }
 
+// ============ PUBLICATIONS ============
 enum PostCategory {
   LEARNING      // Apprentissage
   GUITAR        // Section guitar playing
   GENERAL      
   TUTORIAL      // Tutoriels
+
 }
 
 model Post {
@@ -90,7 +95,7 @@ model Post {
   title       String       @db.VarChar(200)
   content     String?      @db.Text
   category    PostCategory
-  mediaUrl    Json?        // URLs médias
+  mediaUrl    String?      // URL vidéo/audio/image
   mediaType   String?      // video, audio, image
   published   Boolean      @default(true)
   authorId    String
@@ -180,7 +185,6 @@ model GroupMember {
   userId    String
   role      GroupRole @default(MEMBER)
   joinedAt  DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
 
   group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -224,10 +228,9 @@ model Tab {
   id          String   @id @default(uuid())
   title       String   @db.VarChar(200)
   artist      String   @db.VarChar(100)
-  rythm       Json?      // ex: 120
-  content     Json[]   // Contenu de la tablature
+  content     String   @db.Text // Contenu de la tablature
   difficulty  Int      @default(1) // 1-5
-  tuning      String   @db.Text // standard, drop-d, avec l note correspondant à chaque corde (ex: E A D G B e) etc.
+  tuning      String   @default("standard") // standard, drop-d, etc.
   authorId    String
   isPublic    Boolean  @default(true)
   views       Int      @default(0)
@@ -243,7 +246,7 @@ model Tab {
 model Chord {
   id          String  @id @default(uuid())
   name        String  @unique // Ex: "C", "Am", "G7"
-  positions   Json // JSON des positions des doigts
+  positions   String  @db.Text // JSON des positions des doigts
   difficulty  Int     @default(1)
   imageUrl    String?
   audioUrl    String? // Son de l'accord
