@@ -9,7 +9,7 @@ export const getUsers = async (req: Request, res: Response) => {
         });
         return res.json(users);
     } catch (error) {
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: 'Internal server error', message: error });
     }
 }
 export const getUserById = async (req: Request, res: Response) => {
