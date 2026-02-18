@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 // import { setAuthToken } from '@/utils/auth'
 
-export default function Page() {
+export default function Signup() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
@@ -17,11 +17,23 @@ export default function Page() {
       
       // Convertir FormData en JSON
       const data = {
+        username : formData.get('username'),
         email: formData.get('email'),
-        password: formData.get('password')
+        password: formData.get('password'),
+        confirmPassword: formData.get("confirmPassword")
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+      // Vérifier si les mots de passe correspondent
+      if (data.password !== data.confirmPassword) {
+        throw new Error('Les mots de passe ne correspondent pas')
+      }
+
+      // Vérifier la longueur minimale
+      if (data.password.length < 6) {
+        throw new Error('Le mot de passe doit contenir au moins 6 caractères')
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -32,14 +44,14 @@ export default function Page() {
       const result = await response.json()
 
       if (!response.ok) {
-        throw new Error(result.message || 'Erreur de connexion')
+        throw new Error(result.message || "Erreur lors de l'inscription.")
       }
 
       // Sauvegarder le token
     //   setAuthToken(result.token)
       
-      // Rediriger vers la timeline
-      router.push('/timeline')
+      // Rediriger vers la page de connexion
+      router.push('/login')
 
     } catch (error) {
       console.error(error)
@@ -52,14 +64,24 @@ export default function Page() {
   return (
     <div className='flex flex-1/2 h-screen justify-center items-center'>
       <form onSubmit={onSubmit} className='flex flex-col gap-4 justify-center p-8 rounded-lg shadow-lg bg-card w-full max-w-md'>
-        <h1 className='text-2xl font-bold text-center mb-4'>Log in</h1>
+        <h1 className='text-2xl font-bold text-center mb-4'>Sign up</h1>
         
         {error && (
           <div className='bg-destructive/10 text-destructive p-3 rounded-md text-sm'>
             {error}
           </div>
         )}
-
+        <div className='flex flex-col gap-2'>
+          <label htmlFor="username" className='text-sm font-medium'>Username</label>
+          <input 
+            type="text" 
+            name="username" 
+            id="username"
+            required
+            className='border rounded-md px-3 py-2 bg-input'
+            disabled={isLoading}
+          />
+        </div>
         <div className='flex flex-col gap-2'>
           <label htmlFor="email" className='text-sm font-medium'>Email</label>
           <input 
@@ -79,6 +101,20 @@ export default function Page() {
             name="password" 
             id="password"
             required
+            minLength={6}
+            className='border rounded-md px-3 py-2 bg-input'
+            disabled={isLoading}
+          />
+        </div>
+
+        <div className='flex flex-col gap-2'>
+          <label htmlFor="confirmPassword" className='text-sm font-medium'>Confirm password</label>
+          <input 
+            type="password" 
+            name="confirmPassword" 
+            id="confirmPassword"
+            required
+            minLength={6}
             className='border rounded-md px-3 py-2 bg-input'
             disabled={isLoading}
           />

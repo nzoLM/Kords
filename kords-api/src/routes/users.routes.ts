@@ -8,7 +8,7 @@ router.get("/:id", controller.getUserById);
 router.get("/:id/followers", controller.getUserFollowers)
 router.get("/:id/following", controller.getUserFollowing)
 router.get("/:id/tabs", controller.getUserTabs)
-router.put("/:id",authenticate, controller.updateUser)
+router.put("/:id", authenticate, controller.updateUser)
 router.put("/:id/password", authenticate, controller.updatePassword)
 router.delete("/:id/delete", authenticate, controller.deleteUser)
 
