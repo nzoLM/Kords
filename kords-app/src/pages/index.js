@@ -16,11 +16,11 @@ import Link from "next/link";
 
 export default function Home() {
   const router = useRouter();
-
+  
   return (
     <div className="min-h-screen justify-center items-center flex">
       <div className="absolute top-2 left-1/2 -translate-x-1/2">
-        <Image alt="Logo Kords" src={"./LOGO-white.svg"} width={100} height={100} style={{color : "#FFFFFF"}} className="fill-white" />
+        <Image alt="Logo Kords" src={"./LOGO-white.svg"} width={100} height={100} style={{ color: "#FFFFFF" }} className="fill-white" />
       </div>
       <div className="flex flex-col flex-1/2 justify-center items-center h-full">
         <h1 className="font-[BBTMartires] text-7xl text-center">Welcome to Kords !</h1>
