@@ -82,7 +82,6 @@ model UserTaste {
   @@unique([userId, artistId])
 }
 
-// ============ PUBLICATIONS ============
 enum PostCategory {
   LEARNING      // Apprentissage
   GUITAR        // Section guitar playing
