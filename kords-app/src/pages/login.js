@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
-// import { setAuthToken } from '@/utils/auth'
+import { setAuthToken } from '@/utils/auth'
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false)
@@ -36,7 +36,7 @@ export default function Page() {
       }
 
       // Sauvegarder le token
-    //   setAuthToken(result.token)
+      setAuthToken(result.token)
       
       // Rediriger vers la timeline
       router.push('/timeline')

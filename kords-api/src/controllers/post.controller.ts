@@ -32,29 +32,6 @@ export const getPostById = async (req: Request, res: Response) => {
     }
 }
 
-export const publishPostById = async (req: Request, res: Response) => {
-
-    try {
-        const { id } = req.params;
-
-        if (typeof id !== 'string') {
-            return res.status(400).json({ error: 'Invalid post ID' });
-        }
-
-        const posts = await prisma.post.update({
-            where: { id },
-            data: {
-                published: true
-            }
-        }
-        );
-
-        return res.json(posts);
-    } catch (error) {
-        return res.status(500).json({ error: 'Internal server error' });
-    }
-}
-
 export const getPostByAuthorId = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
@@ -75,11 +52,11 @@ export const getPostByAuthorId = async (req: Request, res: Response) => {
 }
 
 export const createPost = async (req: Request, res: Response) => {
-    if (!req.user) {
-        return res.status(401).json({ error: 'User not authentified.' });
-    }
-
+    
     try {
+        if (!req.user) {
+            return res.status(401).json({ error: 'User not authentified.' });
+        }
         const user = req.user;
         const { content, title, category, mediaUrl, mediaType } = req.body;
         if (!content || !title) {
@@ -91,9 +68,9 @@ export const createPost = async (req: Request, res: Response) => {
                 content: content,
                 title: title,
                 category: category,
-                published: false,
+                published: true,
                 author: {
-                    connect: { id: user.id }
+                    connect: { id: user.userId }
                 },
                 ...(mediaUrl && { mediaUrl }),
                 ...(mediaType && { mediaType }),
@@ -101,7 +78,7 @@ export const createPost = async (req: Request, res: Response) => {
         })
         return res.status(201).json(post);
     } catch (error) {
-        return res.status(500).json({ error: error })
+        return res.status(500).json(error)
     }
 }
 

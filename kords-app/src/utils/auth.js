@@ -6,3 +6,6 @@ export const isAuthenticated = () => {
   return !!getAuthToken();
 };
 
+export const setAuthToken = (token) => {
+  localStorage.setItem("token", token);
+}
