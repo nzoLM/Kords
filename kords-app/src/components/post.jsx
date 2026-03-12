@@ -1,4 +1,7 @@
-export default function Post({ title, content, mediaUrl, mediaType, author}) {
+export default function Post({ id, title, content, mediaUrl, mediaType, author }) {
+
+    
+
     return (
         <div className="p-4 w-full flex flex-col gap-2">
             <div className="flex gap-2">
@@ -10,7 +13,9 @@ export default function Post({ title, content, mediaUrl, mediaType, author}) {
                 <p>{content}</p>
             </div>
             <div className="flex justify-around">
-                <p>Like</p>
+                <button onClick={}>
+                    <p>Like</p>
+                </button>
                 <p>Recommended</p>
                 <p>Comments</p>
                 <p>Share</p>

@@ -6,7 +6,7 @@ const links = []
 export default function Navbar({onClick}) {
     
     return (
-        <div className="flex flex-col p-4 min-h-screen w-1/5">
+        <div className="flex flex-col p-4 sticky top-0 h-screen w-1/5 border-r border-gray-700">
             <div className="flex justify-start items-center">
                 <Logo>
                 </Logo>
