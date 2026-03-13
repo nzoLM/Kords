@@ -36,7 +36,6 @@ export default function PostForm({ closeForm }) {
 
     const onSubmit = async (data) => {
         try {
-            // Retirer le champ media qui n'existe pas dans Prisma
             const { title, content, category } = data;
             
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/post`, {

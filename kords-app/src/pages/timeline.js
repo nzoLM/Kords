@@ -62,7 +62,7 @@ export default function Timeline() {
         <div className="flex min-h-screen">
             {
                 form &&
-                <div className="z-50 absolute w-full h-full bg-black/50">
+                <div className="z-50 top-0 fixed w-full h-full bg-black/50">
                     <PostForm closeForm={() => setForm(false)}></PostForm>
 
                 </div>
