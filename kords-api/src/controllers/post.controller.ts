@@ -12,6 +12,12 @@ export const getTimeline = async (req: Request, res: Response) => {
                         username: true,
                         avatar: true,
                     }
+                },
+                reactions: {
+                    select: {
+                        type: true,
+                        userId: true
+                    }
                 }
             }
         });
@@ -49,8 +55,8 @@ export const getPostByAuthorId = async (req: Request, res: Response) => {
             return res.status(400).json({ error: 'Invalid post ID' });
         }
 
-        const posts = await prisma.post.findUnique({
-            where: { authorId: id },
+        const posts = await prisma.post.findMany({
+            where: { authorId : id },
         }
         );
 
@@ -61,7 +67,7 @@ export const getPostByAuthorId = async (req: Request, res: Response) => {
 }
 
 export const createPost = async (req: Request, res: Response) => {
-    
+
     try {
         if (!req.user) {
             return res.status(401).json({ error: 'User not authentified.' });
@@ -137,7 +143,7 @@ export const updatePostById = async (req: Request, res: Response) => {
     } catch (error) {
         return res.status(500).json({ error: error })
     }
-} 
+}
 
 export const likePost = async (req: Request, res: Response) => {
     try {
@@ -169,3 +175,46 @@ export const likePost = async (req: Request, res: Response) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 }
+
+export const commentPost = async (req: Request, res: Response) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ error: 'User not authentified.' });
+        }
+
+        const { id } = req.params;
+        const { content } = req.body;
+
+        if (typeof id !== 'string') {
+            return res.status(400).json({ error: 'Invalid post ID' });
+        }
+
+        if (typeof content !== 'string' || content.trim().length === 0) {
+            return res.status(400).json({ error: 'Comment content is required' });
+        }
+
+        const post = await prisma.post.findUnique({ where: { id }, select: { id: true } });
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        const comment = await prisma.comment.create({
+            data: {
+                postId: id,
+                authorId: req.user.userId,
+                content: content.trim()
+            },
+            select: {
+                id: true,
+                content: true,
+                postId: true,
+                authorId: true,
+                createdAt: true
+            }
+        });
+
+        return res.status(201).json({ message: 'Comment added successfully.', comment });
+    } catch (error) {
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};

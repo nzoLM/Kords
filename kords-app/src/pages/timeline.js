@@ -25,6 +25,7 @@ export default function Timeline() {
 
                 const data = await response.json();
                 setPosts(data);
+                console.log(data)
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -68,7 +69,7 @@ export default function Timeline() {
             }
             <Navbar onClick={() => setForm(true)}></Navbar>
             <div className="flex flex-col w-3/5">
-                <div className="flex justify-around p-4 border-b border-gray-700">
+                <div className="sticky top-0 bg-background flex justify-around p-4 border-b border-gray-700">
                     <p>General</p>
                     <p>Lessons</p>
                     <p>Videos</p>
@@ -86,6 +87,7 @@ export default function Timeline() {
                                     mediaUrl={post.mediaUrl}
                                     mediaType={post.mediaType}
                                     author={post.author.username}
+                                    reactions={post.reactions}
                                 />
 
                             </div>
