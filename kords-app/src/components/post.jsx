@@ -3,15 +3,21 @@ import { useState, useEffect } from "react"
 import { getCurrentUserId } from "@/utils/auth";
 
 
-export default function Post({ id, title, content, mediaUrl, mediaType, author, reactions }) {
+export default function Post({ id, title, content, mediaUrl, mediaType, author, reactions, createComment, comments }) {
     const currentUserId = getCurrentUserId();
     const [likes, setLikes] = useState(reactions?.filter(r => r.type === "LIKE").length ?? 0)
+    const [commentsArray, setCommentsArray] = useState(comments)
     const [isLiked, setIsLiked] = useState(reactions?.some(r => r.type === "LIKE" && r.userId === currentUserId) ?? false)
 
     useEffect(() => {
         setLikes(reactions?.filter(r => r.type === "LIKE").length ?? 0)
         setIsLiked(reactions?.some(r => r.type === "LIKE" && r.userId === currentUserId) ?? false)
     }, [reactions])
+
+    useEffect(() => {
+      setCommentsArray(comments)
+    }, [comments])
+    
 
     async function likePost() {
         try {
@@ -55,10 +61,14 @@ export default function Post({ id, title, content, mediaUrl, mediaType, author, 
                 <button
                     className={`hover:scale-115 active:scale-95 cursor-pointer transition ${isLiked ? "text-blue-400" : ""}`}
                     onClick={likePost}>
-                    {likes} Like
+                    {likes} likes
                 </button>
                 <p>Recommended</p>
-                <p>Comments</p>
+                <button
+                    className={`hover:scale-115 active:scale-95 cursor-pointer transition`}
+                    onClick={createComment}>
+                    {commentsArray?.length} comments
+                </button>
                 <p>Share</p>
             </div>
         </div>

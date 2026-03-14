@@ -9,7 +9,7 @@ const commentSchema = z.object({
     content: z.string().min(1, "Le contenu est requis"),
 })
 
-export default function commentForm({ closeForm, postId, postAuthor }) {
+export default function CommentForm({ closeForm, post }) {
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(commentSchema),
     })
@@ -18,7 +18,7 @@ export default function commentForm({ closeForm, postId, postAuthor }) {
         try {
             const { content } = data;
             
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/${postId}/comment`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/${post.id}/comment`, {
                 method: "POST",
                 headers: {
                     'Authorization' : `Bearer ${getAuthToken()}`,
@@ -50,7 +50,7 @@ export default function commentForm({ closeForm, postId, postAuthor }) {
                 </button>
             </div>
             <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col justify-evenly">
-                <p>Reply to<a href={"/profile/" + postAuthor.username}>@{postAuthor}</a></p>
+                <p>Reply to <a className="text-blue-500" href={"/profile/" + post.author.username}>@{post.author.username}</a></p>
                 <label htmlFor="content">Content</label>
                 <textarea
                     {...register("content")}

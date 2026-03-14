@@ -18,6 +18,9 @@ export const getTimeline = async (req: Request, res: Response) => {
                         type: true,
                         userId: true
                     }
+                },
+                comments : {
+                    
                 }
             }
         });

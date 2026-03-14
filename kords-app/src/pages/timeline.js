@@ -2,13 +2,21 @@ import Navbar from "@/components/navbar"
 import Post from "@/components/post"
 import { useState, useEffect } from "react";
 import PostForm from "@/components/post-form";
-
+import CommentForm from "@/components/comment-form";
 
 export default function Timeline() {
-    const [form, setForm] = useState(false);
+    const [postForm, setPostForm] = useState(false);
+    const [commentForm, setCommentForm] = useState(false);
+    const [selectedPost, setSelectedPost] = useState(null);
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const openCommentForm = (post) => {
+        setSelectedPost(post);
+        setCommentForm(true);
+        setPostForm(false);
+    };
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -39,7 +47,7 @@ export default function Timeline() {
     if (loading) {
         return (
             <div className="flex min-h-screen">
-                <Navbar onClick={() => setForm(true)}></Navbar>
+                <Navbar onClick={() => setPostForm(true)}></Navbar>
                 <div className="flex items-center justify-center w-full">
                     <p>Chargement des publications...</p>
                 </div>
@@ -50,7 +58,7 @@ export default function Timeline() {
     if (error) {
         return (
             <div className="flex min-h-screen">
-                <Navbar onClick={() => setForm(true)}></Navbar>
+                <Navbar onClick={() => setPostForm(true)}></Navbar>
                 <div className="flex items-center justify-center w-full">
                     <p className="text-red-500">Erreur : {error}</p>
                 </div>
@@ -61,25 +69,36 @@ export default function Timeline() {
     return (
         <div className="flex min-h-screen">
             {
-                form &&
+                postForm && !commentForm &&
                 <div className="z-50 top-0 fixed w-full h-full bg-black/50">
-                    <PostForm closeForm={() => setForm(false)}></PostForm>
-
+                    <PostForm closeForm={() => setPostForm(false)}></PostForm>
                 </div>
             }
-            <Navbar onClick={() => setForm(true)}></Navbar>
+            {
+                commentForm && !postForm && selectedPost &&
+                <div className="z-50 top-0 fixed w-full h-full bg-black/50">
+                    <CommentForm 
+                        post={selectedPost}
+                        closeForm={() => {
+                            setCommentForm(false);
+                            setSelectedPost(null);
+                        }}
+                    />
+                </div>
+            }
+            <Navbar onClick={() => setPostForm(true)}></Navbar>
             <div className="flex flex-col w-3/5">
                 <div className="sticky top-0 bg-background flex justify-around p-4 border-b border-gray-700">
-                    <p>General</p>
-                    <p>Lessons</p>
-                    <p>Videos</p>
+                    <button>
+                        General
+                    </button>
                 </div>
                 <div className="flex flex-col">
                     {posts.length === 0 ? (
                         <p className="p-4">Aucune publication pour le moment</p>
                     ) : (
                         posts.map((post) => (
-                            <div className="border-b border-gray-700">
+                            <div key={post.id} className="border-b border-gray-700">
                                 <Post
                                     id={post.id}
                                     title={post.title}
@@ -88,14 +107,14 @@ export default function Timeline() {
                                     mediaType={post.mediaType}
                                     author={post.author.username}
                                     reactions={post.reactions}
+                                    comments={post.comments}
+                                    createComment={() => openCommentForm(post)}
                                 />
-
                             </div>
                         ))
                     )}
                 </div>
             </div>
-
         </div>
     )
 }
