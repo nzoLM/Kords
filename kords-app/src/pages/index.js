@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { isAuthenticated } from "@/utils/auth";
+import { useEffect } from "react";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -15,9 +17,17 @@ import Link from "next/link";
 // });
 
 
+
 export default function Home() {
   const router = useRouter();
   
+  useEffect( () => {
+    if (isAuthenticated()){
+      router.push("timeline");
+    }
+  }
+
+  )
   return (
     <div className="min-h-screen justify-center items-center flex">
       <div className="absolute top-2 left-1/2 -translate-x-1/2">
