@@ -10,11 +10,14 @@ const postSchema = z.object({
     content: z.string().min(1, "Le contenu est requis"),
     category: z.enum(["GENERAL", "LEARNING", "GUITAR", "TUTORIAL"], {
         required_error: "Veuillez sélectionner une catégorie"
-    })
+    }),
+    mediaFile: z.instanceof(File).optional()
 })
 
 export default function PostForm({ closeForm }) {
     const [selectedCategory, setSelectedCategory] = useState("GENERAL")
+    const [selectedImage, setSelectedImage] = useState(null)
+    const [imagePreview, setImagePreview] = useState(null)
     const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(postSchema),
         defaultValues: {
@@ -34,17 +37,48 @@ export default function PostForm({ closeForm }) {
         setValue("category", category)
     }
 
+    const handleImageSelect = (e) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            setSelectedImage(file)
+            setValue("mediaFile", file)
+            
+            const reader = new FileReader()
+            reader.onloadend = () => {
+                setImagePreview(reader.result)
+            }
+            reader.readAsDataURL(file)
+        }
+    }
+
+    const handleRemoveImage = () => {
+        setSelectedImage(null)
+        setImagePreview(null)
+        setValue("mediaFile", undefined)
+        // Réinitialiser l'input file
+        const fileInput = document.getElementById("media")
+        if (fileInput) fileInput.value = ""
+    }
+
     const onSubmit = async (data) => {
         try {
-            const { title, content, category } = data;
+            const { title, content, category, mediaFile } = data;
+            
+            const formData = new FormData()
+            formData.append("title", title)
+            formData.append("content", content)
+            formData.append("category", category)
+            if (mediaFile) {
+                formData.append("media", mediaFile)
+                formData.append("mediaType", "image")
+            }
             
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/post`, {
                 method: "POST",
                 headers: {
-                    'Authorization' : `Bearer ${getAuthToken()}`,
-                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getAuthToken()}`,
                 },
-                body: JSON.stringify({ title, content, category })
+                body: formData
             }); 
             const result = await response.json();
 
@@ -103,6 +137,35 @@ export default function PostForm({ closeForm }) {
                     id="content"
                 />
                 {errors.content && <p className="text-red-500 text-sm">{errors.content.message}</p>}
+
+                <label htmlFor="media">Image (optionnelle)</label>
+                <div className="flex items-center gap-2">
+                    <input
+                        type="file"
+                        id="media"
+                        accept="image/*"
+                        onChange={handleImageSelect}
+                        className="border rounded px-2 py-1"
+                    />
+                </div>
+                {imagePreview && (
+                    <div className="mt-2 flex flex-col gap-2">
+                        <div className="relative w-fit">
+                            <img 
+                                src={imagePreview} 
+                                alt="Preview" 
+                                className="max-w-xs max-h-48 rounded border"
+                            />
+                            <button
+                                type="button"
+                                onClick={handleRemoveImage}
+                                className="absolute top-2 right-2 bg-red-700 text-white rounded-full p-1 flex items-center justify-center cursor-pointer hover:bg-red-800"
+                            >
+                                Supprimer l'image ×
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 <Button
                     className="self-end w-fit cursor-pointer"

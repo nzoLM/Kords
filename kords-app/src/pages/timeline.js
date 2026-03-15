@@ -3,7 +3,7 @@ import Post from "@/components/post"
 import { useState, useEffect } from "react";
 import PostForm from "@/components/post-form";
 import CommentForm from "@/components/comment-form";
-
+import Router, { useRouter } from "next/router";
 export default function Timeline() {
     const [postForm, setPostForm] = useState(false);
     const [commentForm, setCommentForm] = useState(false);
@@ -17,6 +17,7 @@ export default function Timeline() {
         setCommentForm(true);
         setPostForm(false);
     };
+    const router = useRouter();
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -77,7 +78,7 @@ export default function Timeline() {
             {
                 commentForm && !postForm && selectedPost &&
                 <div className="z-50 top-0 fixed w-full h-full bg-black/50">
-                    <CommentForm 
+                    <CommentForm
                         post={selectedPost}
                         closeForm={() => {
                             setCommentForm(false);
@@ -108,7 +109,9 @@ export default function Timeline() {
                                     author={post.author.username}
                                     reactions={post.reactions}
                                     comments={post.comments}
-                                    createComment={() => openCommentForm(post)}
+                                    createComment={(e) => {
+                                        openCommentForm(post)}
+                                    }
                                 />
                             </div>
                         ))

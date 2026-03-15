@@ -1,5 +1,6 @@
 import { prisma } from "..";
 import { Request, Response } from 'express';
+import { uploadImage } from "../../lib/s3";
 
 export const getTimeline = async (req: Request, res: Response) => {
     try {
@@ -19,8 +20,7 @@ export const getTimeline = async (req: Request, res: Response) => {
                         userId: true
                     }
                 },
-                comments : {
-                    
+                comments: {
                 }
             }
         });
@@ -41,6 +41,11 @@ export const getPostById = async (req: Request, res: Response) => {
 
         const posts = await prisma.post.findUnique({
             where: { id },
+            select: {
+                comments: {},
+                reactions: {},
+                author : {}
+            }
         }
         );
 
@@ -59,7 +64,7 @@ export const getPostByAuthorId = async (req: Request, res: Response) => {
         }
 
         const posts = await prisma.post.findMany({
-            where: { authorId : id },
+            where: { authorId: id },
         }
         );
 
@@ -70,33 +75,41 @@ export const getPostByAuthorId = async (req: Request, res: Response) => {
 }
 
 export const createPost = async (req: Request, res: Response) => {
-
     try {
         if (!req.user) {
             return res.status(401).json({ error: 'User not authentified.' });
         }
-        const user = req.user;
-        const { content, title, category, mediaUrl, mediaType } = req.body;
+
+        const { content, title, category } = req.body;
+        const file = (req as any).file;
+
         if (!content || !title) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
 
+        let mediaUrl = null;
+        let mediaType = null;
+
+        if (file) {
+            mediaUrl = await uploadImage(file, "posts");
+            mediaType = file.mimetype;
+        }
+
         const post = await prisma.post.create({
             data: {
-                content: content,
-                title: title,
-                category: category,
+                content,
+                title,
+                category,
                 published: true,
-                author: {
-                    connect: { id: user.userId }
-                },
+                author: { connect: { id: req.user.userId } },
                 ...(mediaUrl && { mediaUrl }),
                 ...(mediaType && { mediaType }),
-            }
-        })
+            },
+        });
+
         return res.status(201).json(post);
     } catch (error) {
-        return res.status(500).json(error)
+        return res.status(500).json({ error: 'Internal server error' });
     }
 }
 

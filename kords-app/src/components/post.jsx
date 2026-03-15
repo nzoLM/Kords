@@ -1,6 +1,7 @@
 import { getAuthToken } from "@/utils/auth"
 import { useState, useEffect } from "react"
 import { getCurrentUserId } from "@/utils/auth";
+import { useRouter } from "next/router";
 
 
 export default function Post({ id, title, content, mediaUrl, mediaType, author, reactions, createComment, comments }) {
@@ -8,6 +9,7 @@ export default function Post({ id, title, content, mediaUrl, mediaType, author, 
     const [likes, setLikes] = useState(reactions?.filter(r => r.type === "LIKE").length ?? 0)
     const [commentsArray, setCommentsArray] = useState(comments)
     const [isLiked, setIsLiked] = useState(reactions?.some(r => r.type === "LIKE" && r.userId === currentUserId) ?? false)
+    const router = useRouter()
 
     useEffect(() => {
         setLikes(reactions?.filter(r => r.type === "LIKE").length ?? 0)
@@ -15,9 +17,9 @@ export default function Post({ id, title, content, mediaUrl, mediaType, author, 
     }, [reactions])
 
     useEffect(() => {
-      setCommentsArray(comments)
+        setCommentsArray(comments)
     }, [comments])
-    
+
 
     async function likePost() {
         try {
@@ -48,7 +50,10 @@ export default function Post({ id, title, content, mediaUrl, mediaType, author, 
     }
 
     return (
-        <div className="p-4 w-full flex flex-col gap-2">
+        <div onClick={(e) => {
+            e.stopPropagation()
+            router.push("/post/" + id)}} 
+            className="p-4 w-full flex flex-col gap-2">
             <div className="flex gap-2">
                 <div className="rounded-full w-8 h-8 bg-white"></div>
                 <p>{author}</p>
