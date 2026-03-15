@@ -60,7 +60,7 @@ CREATE TABLE "Post" (
     "title" VARCHAR(200) NOT NULL,
     "content" TEXT,
     "category" "PostCategory" NOT NULL,
-    "mediaUrl" JSONB,
+    "mediaUrl" TEXT,
     "mediaType" TEXT,
     "published" BOOLEAN NOT NULL DEFAULT true,
     "authorId" TEXT NOT NULL,
@@ -124,7 +124,6 @@ CREATE TABLE "GroupMember" (
     "userId" TEXT NOT NULL,
     "role" "GroupRole" NOT NULL DEFAULT 'MEMBER',
     "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "GroupMember_pkey" PRIMARY KEY ("id")
 );
@@ -134,10 +133,9 @@ CREATE TABLE "Tab" (
     "id" TEXT NOT NULL,
     "title" VARCHAR(200) NOT NULL,
     "artist" VARCHAR(100) NOT NULL,
-    "rythm" JSONB,
-    "content" JSONB[],
+    "content" TEXT NOT NULL,
     "difficulty" INTEGER NOT NULL DEFAULT 1,
-    "tuning" TEXT NOT NULL,
+    "tuning" TEXT NOT NULL DEFAULT 'standard',
     "authorId" TEXT NOT NULL,
     "isPublic" BOOLEAN NOT NULL DEFAULT true,
     "views" INTEGER NOT NULL DEFAULT 0,
@@ -151,7 +149,7 @@ CREATE TABLE "Tab" (
 CREATE TABLE "Chord" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "positions" JSONB NOT NULL,
+    "positions" TEXT NOT NULL,
     "difficulty" INTEGER NOT NULL DEFAULT 1,
     "imageUrl" TEXT,
     "audioUrl" TEXT,
