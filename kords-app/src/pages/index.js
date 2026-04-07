@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/router";
+import Router from "next/router";
 import Link from "next/link";
 import { isAuthenticated } from "@/utils/auth";
 import { useEffect } from "react";
@@ -20,14 +21,17 @@ import { useEffect } from "react";
 
 export default function Home() {
   const router = useRouter();
-  
-  useEffect( () => {
-    if (isAuthenticated()){
-      router.push("timeline");
-    }
-  }
 
-  )
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (isAuthenticated()) {
+        await router.push("/timeline");
+      }
+    };
+    checkAuth();
+  }, [router])
+
+
   return (
     <div className="min-h-screen justify-center items-center flex">
       <div className="absolute top-2 left-1/2 -translate-x-1/2">
