@@ -1,10 +1,17 @@
+
 export const getAuthToken = () => {
+  if (typeof window === 'undefined') return null;
   return localStorage.getItem('token');
 };
 
 export const isAuthenticated = () => {
   return !!getAuthToken();
 };
+
+export const logOut = (router) => {
+  localStorage.removeItem("token");
+  router.replace("/");
+}
 
 export const setAuthToken = (token) => {
   localStorage.setItem("token", token);

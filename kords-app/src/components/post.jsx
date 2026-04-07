@@ -20,8 +20,11 @@ export default function Post({ id, title, content, mediaUrl, mediaType, author, 
         setCommentsArray(comments)
     }, [comments])
 
-
-    async function likePost() {
+    async function likePost(e) {
+        e.stopPropagation()
+        if (getAuthToken()==null){
+            router.push("/login")
+        }
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/${id}/like`, {
                 method: 'POST',
@@ -71,7 +74,10 @@ export default function Post({ id, title, content, mediaUrl, mediaType, author, 
                 <p>Recommended</p>
                 <button
                     className={`hover:scale-115 active:scale-95 cursor-pointer transition`}
-                    onClick={createComment}>
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        createComment(e)
+                    }}>
                     {commentsArray?.length} comments
                 </button>
                 <p>Share</p>

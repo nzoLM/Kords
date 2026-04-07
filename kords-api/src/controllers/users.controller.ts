@@ -160,3 +160,7 @@ export const getUserFollowing = async (req: Request, res: Response) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 }
+
+export const forgotPassword = async (req: Request, res : Response) => {
+
+}

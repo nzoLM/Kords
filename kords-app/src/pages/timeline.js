@@ -3,7 +3,8 @@ import Post from "@/components/post"
 import { useState, useEffect } from "react";
 import PostForm from "@/components/post-form";
 import CommentForm from "@/components/comment-form";
-import Router, { useRouter } from "next/router";
+import { useRouter } from "next/router";
+
 export default function Timeline() {
     const [postForm, setPostForm] = useState(false);
     const [commentForm, setCommentForm] = useState(false);
@@ -49,7 +50,7 @@ export default function Timeline() {
         return (
             <div className="flex min-h-screen">
                 <Navbar onClick={() => setPostForm(true)}></Navbar>
-                <div className="flex items-center justify-center w-full">
+                <div className="m-auto">
                     <p>Chargement des publications...</p>
                 </div>
             </div>

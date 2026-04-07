@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
+import Link from 'next/link'
 import { setAuthToken } from '@/utils/auth'
+import Logo from '@/components/logo'
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false)
@@ -50,7 +52,8 @@ export default function Page() {
   }
 
   return (
-    <div className='flex flex-1/2 h-screen justify-center items-center'>
+    <div className='flex flex-1/2 flex-col h-screen justify-center items-center'>
+      <Logo></Logo>
       <form onSubmit={onSubmit} className='flex flex-col gap-4 justify-center p-8 rounded-lg shadow-lg bg-card w-full max-w-md'>
         <h1 className='text-2xl font-bold text-center mb-4'>Log in</h1>
         
@@ -87,10 +90,11 @@ export default function Page() {
         <button 
           type="submit" 
           disabled={isLoading}
-          className='bg-primary text-primary-foreground py-2 px-4 rounded-md font-medium hover:opacity-90 disabled:opacity-50'
+          className='cursor-pointer bg-primary text-primary-foreground py-2 px-4 rounded-md font-medium hover:opacity-90 disabled:opacity-50'
         >
           {isLoading ? 'Loading...' : 'Submit'}
         </button>
+        <Link className='self-center text-center w-fit cursor-pointer hover:opacity-50 transition' href={"/signup"}>No account ? Sign up here.</Link>
       </form>
     </div>
   )
