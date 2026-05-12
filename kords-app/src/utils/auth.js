@@ -1,3 +1,4 @@
+import { jwtDecode as jwt_decode } from "jwt-decode";
 
 export const getAuthToken = () => {
   if (typeof window === 'undefined') return null;

@@ -2,6 +2,23 @@ import { Request, Response } from 'express';
 import { prisma } from '../index';
 import bcrypt from 'bcrypt';
 
+export const getCurrentConnectedUser = async (req: Request, res: Response) => {
+    try {
+        const id = req.user!.userId;
+
+        const user = await prisma.user.findUnique({
+            where: { id },
+            omit: { password: true }
+        });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        return res.json(user);
+    } catch (error) {
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
 export const getUsers = async (req: Request, res: Response) => {
     try {
         const users = await prisma.user.findMany({

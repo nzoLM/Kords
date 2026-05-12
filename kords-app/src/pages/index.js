@@ -55,9 +55,9 @@ export default function Home() {
         </div>
       </header>
 
-      <section className="flex ">
+      <section className="grid grid-cols-2">
         <div className="flex flex-col items-left justify-left text-left px-6 py-24 gap-6">
-          <p className="text-primary text-sm font-semibold uppercase tracking-widest">
+          <p className="text-primary text-sm font-semibold uppercase ">
             La plateforme des guitaristes autodidactes
           </p>
           <h1 className="font-[BBTMartires] text-6xl md:text-8xl leading-tight max-w-3xl">
@@ -78,22 +78,25 @@ export default function Home() {
                 variant="outline"
                 className="cursor-pointer font-semibold text-base px-8 py-5 border-gray-600 text-muted-foreground hover:text-foreground"
               >
-                Explorer en invité →
+                Découvrir →
               </Button>
             </Link>
           </div>
         </div>
+        <div className="flex text-center items-center justify-center">
+          <p className="italic">Emplacement des mockups de l'application</p>
+        </div>
       </section>
 
       <section className="px-8 py-16 border-t border-gray-700">
-        <h2 className="text-center text-sm font-bold mb-12 text-muted-foreground uppercase tracking-wider">
+        <h2 className="text-center text-sm font-bold mb-12 text-muted-foreground uppercase">
           Tout ce qu'il te faut pour progresser
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto p-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mx-auto p-2">
           {features.map((f) => (
             <div
               key={f.title}
-              className="flex flex-col gap-3 p-6 rounded-2xl border border-gray-700 bg-muted/30 hover:border-primary transition"
+              className="flex flex-col gap-3 p-6 "
             >
               <span>{f.icon}</span>
               <h3 className="font-bold text-lg">{f.title}</h3>
