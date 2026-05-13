@@ -4,52 +4,90 @@ import { Button } from "./ui/button";
 import { isAuthenticated, logOut } from "@/utils/auth";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import { Home, Search, MessageCircle, Music, Wrench, User, Settings, LogOut, LogIn, PenSquare } from "lucide-react";
 
-const links = [{ link: "/timeline", page: "Timeline" }, { link: "/search", page: "Search" },
-{ link: "/messages", page: "Messages" }, { link: "/tabs", page: "Tabs" }, { link: "/tools", page: "Tools" },
-{ link: "/profile", page: "Profile" }, { link: "/settings", page: "Settings" }
+const navLinks = [
+    { href: "/timeline", label: "Accueil", icon: Home },
+    { href: "/search", label: "Recherche", icon: Search },
+    { href: "/messages", label: "Messages", icon: MessageCircle },
+    { href: "/tabs", label: "Tablatures", icon: Music },
+    { href: "/tools", label: "Outils", icon: Wrench },
 ]
+    
 export default function Navbar({ onClick }) {
-
     const [logged, setLogged] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
-      if (isAuthenticated()){
-        setLogged(true);
-      }else {
-        setLogged(false)
-      }
+        setLogged(isAuthenticated());
     }, [])
-    
 
-    const handleLogout = () => {
-        logOut(router);
-    }
+    const handleLogout = () => logOut(router);
 
     return (
-        <div className = "flex flex-col p-4 sticky top-0 h-screen w-1/5 border-r border-gray-700" >
-            <div className="flex justify-start items-center">
+        <div className="flex flex-col p-4 sticky top-0 h-screen w-64 border-r border-gray-700 shrink-0">
+            <div className="flex justify-start items-center mb-6">
                 <Logo />
             </div>
-            <div className="flex flex-col h-full justify-evenly">
-                <Button onClick={onClick} className={"font-bold text-xl w-fit self-center hover:scale-115 active:scale-95 cursor-pointer"}>+ Create</Button>
-                <Link href={"/timeline"}>Home</Link>
-                <Link href={"/search"}>Search</Link>
-                <Link href={"/messages"}>Messages</Link>
-                <Link href={"/tabs"}>Tabs</Link>
-                <Link href={"/tools"}>Guitar tools</Link>
-                {
-                    logged ? <>
-                        <Link href={"/profile"}>Profile</Link>
 
-                        <button className="text-start cursor-pointer" onClick={handleLogout}>Logout</button>
-                    </> :
-                    <Link href={"/login"}>Log in</Link>
-                }
+            <nav className="flex flex-col gap-1 flex-1">
+                {navLinks.map(({ href, label, icon: Icon }) => {
+                    const active = router.pathname === href;
+                    return (
+                        <Link
+                            key={href}
+                            href={href}
+                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition hover:bg-white/5 ${
+                                active ? "text-foreground bg-white/8 font-semibold" : "text-muted-foreground"
+                            }`}
+                        >
+                            <Icon size={18} />
+                            {label}
+                        </Link>
+                    );
+                })}
 
-                <Link href={"/settings"}>Settings</Link>
+                {logged ? (
+                    <Link href="/profile" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition hover:bg-white/5 ${
+                        router.pathname === "/profile" ? "text-foreground bg-white/8 font-semibold" : "text-muted-foreground"
+                    }`}>
+                        <User size={18} />
+                        Profil
+                    </Link>
+                ) : null}
+
+                <Link href="/settings" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition hover:bg-white/5 ${
+                    router.pathname === "/settings" ? "text-foreground bg-white/8 font-semibold" : "text-muted-foreground"
+                }`}>
+                    <Settings size={18} />
+                    Paramètres
+                </Link>
+            </nav>
+
+            <div className="flex flex-col gap-2 mt-4">
+                <Button
+                    onClick={onClick}
+                    className="w-full font-bold cursor-pointer flex items-center gap-2"
+                >
+                    <PenSquare size={16} />
+                    Publier
+                </Button>
+
+                {logged ? (
+                    <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:text-red-400 hover:bg-red-400/10 transition cursor-pointer"
+                    >
+                        <LogOut size={18} />
+                        Déconnexion
+                    </button>
+                ) : (
+                    <Link href="/login" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:bg-white/5 transition">
+                        <LogIn size={18} />
+                        Connexion
+                    </Link>
+                )}
             </div>
-            </div >
-            )
+        </div>
+    )
 }

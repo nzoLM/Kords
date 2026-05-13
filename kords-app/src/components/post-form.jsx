@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { getAuthToken } from "@/utils/auth"
 import { useState } from "react"
+import { ImagePlus, X } from "lucide-react"
 
 const postSchema = z.object({
     title: z.string().min(1, "Le titre est requis"),
@@ -14,23 +15,21 @@ const postSchema = z.object({
     mediaFile: z.instanceof(File).optional()
 })
 
+const categories = [
+    { label: "Général", value: "GENERAL" },
+    { label: "Apprentissage", value: "LEARNING" },
+    { label: "Guitare", value: "GUITAR" },
+    { label: "Tutoriel", value: "TUTORIAL" }
+]
+
 export default function PostForm({ closeForm }) {
     const [selectedCategory, setSelectedCategory] = useState("GENERAL")
     const [selectedImage, setSelectedImage] = useState(null)
     const [imagePreview, setImagePreview] = useState(null)
     const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(postSchema),
-        defaultValues: {
-            category: "GENERAL"
-        }
+        defaultValues: { category: "GENERAL" }
     })
-
-    const categories = [
-        { label: "General", value: "GENERAL" },
-        { label: "Learning", value: "LEARNING" },
-        { label: "Guitar", value: "GUITAR" },
-        { label: "Tutorial", value: "TUTORIAL" }
-    ]
 
     const handleCategoryClick = (category) => {
         setSelectedCategory(category)
@@ -42,11 +41,8 @@ export default function PostForm({ closeForm }) {
         if (file) {
             setSelectedImage(file)
             setValue("mediaFile", file)
-            
             const reader = new FileReader()
-            reader.onloadend = () => {
-                setImagePreview(reader.result)
-            }
+            reader.onloadend = () => setImagePreview(reader.result)
             reader.readAsDataURL(file)
         }
     }
@@ -55,15 +51,13 @@ export default function PostForm({ closeForm }) {
         setSelectedImage(null)
         setImagePreview(null)
         setValue("mediaFile", undefined)
-        // Réinitialiser l'input file
         const fileInput = document.getElementById("media")
         if (fileInput) fileInput.value = ""
     }
 
     const onSubmit = async (data) => {
         try {
-            const { title, content, category, mediaFile } = data;
-            
+            const { title, content, category, mediaFile } = data
             const formData = new FormData()
             formData.append("title", title)
             formData.append("content", content)
@@ -72,108 +66,85 @@ export default function PostForm({ closeForm }) {
                 formData.append("media", mediaFile)
                 formData.append("mediaType", "image")
             }
-            
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/post`, {
                 method: "POST",
-                headers: {
-                    'Authorization': `Bearer ${getAuthToken()}`,
-                },
+                headers: { 'Authorization': `Bearer ${getAuthToken()}` },
                 body: formData
-            }); 
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result.message || "Erreur lors de la création.");
-            }
-
-            closeForm();
+            })
+            const result = await response.json()
+            if (!response.ok) throw new Error(result.message || "Erreur lors de la création.")
+            closeForm()
         } catch (error) {
-            console.error(error);
+            console.error(error)
         }
     }
 
     return (
-        <div className="bg-background w-2/3 h-2/3 absolute p-4 rounded-lg top-1/8 left-1/2 -translate-x-1/2 flex flex-col">
-            <div className="flex justify-between items-center mb-4">
-                <button
-                    onClick={closeForm}
-                    className="text-gray-500 hover:text-gray-700 text-xl font-bold cursor-pointer"
-                >
-                    ×
+        <div className="bg-background border border-gray-700 w-full max-w-xl rounded-2xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col shadow-2xl">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700">
+                <button onClick={closeForm} className="text-muted-foreground hover:text-foreground transition cursor-pointer rounded-full p-1 hover:bg-white/10">
+                    <X size={20} />
                 </button>
+                <span className="font-semibold text-sm">Nouvelle publication</span>
+                <div className="w-7" />
             </div>
-            <form onSubmit={handleSubmit(onSubmit)} className="h-full flex flex-col justify-evenly">
-                <div className="flex justify-around border-b pb-2 mb-4">
+
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-4">
+                <div className="flex gap-2">
                     {categories.map(({ label, value }) => (
                         <button
                             key={value}
                             type="button"
                             onClick={() => handleCategoryClick(value)}
-                            className={`px-4 py-2 rounded transition-colors cursor-pointer font-semibold ${
+                            className={`px-3 py-1 rounded-full text-xs font-semibold transition cursor-pointer ${
                                 selectedCategory === value
                                     ? "bg-primary text-primary-foreground"
-                                    : "hover:bg-primary/50"
+                                    : "bg-muted text-muted-foreground hover:bg-primary/20 hover:text-primary"
                             }`}
                         >
                             {label}
                         </button>
                     ))}
                 </div>
-                {errors.category && <p className="text-red-500 text-sm mb-2">{errors.category.message}</p>}
-                
-                <label htmlFor="title">Title</label>
+                {errors.category && <p className="text-red-500 text-xs">{errors.category.message}</p>}
+
                 <input
                     {...register("title")}
-                    className="border rounded px-2 py-1"
+                    className="bg-transparent text-lg font-bold placeholder:text-muted-foreground/50 outline-none border-none w-full"
                     type="text"
-                    id="title"
+                    placeholder="Titre"
                 />
-                {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
+                {errors.title && <p className="text-red-500 text-xs">{errors.title.message}</p>}
 
-                <label htmlFor="content">Content</label>
                 <textarea
                     {...register("content")}
-                    className="border rounded px-2 py-1"
-                    id="content"
+                    className="bg-transparent text-sm text-muted-foreground placeholder:text-muted-foreground/50 outline-none border-none resize-none w-full min-h-24"
+                    placeholder="Quoi de neuf ?"
                 />
-                {errors.content && <p className="text-red-500 text-sm">{errors.content.message}</p>}
+                {errors.content && <p className="text-red-500 text-xs">{errors.content.message}</p>}
 
-                <label htmlFor="media">Image (optionnelle)</label>
-                <div className="flex items-center gap-2">
-                    <input
-                        type="file"
-                        id="media"
-                        accept="image/*"
-                        onChange={handleImageSelect}
-                        className="border rounded px-2 py-1"
-                    />
-                </div>
                 {imagePreview && (
-                    <div className="mt-2 flex flex-col gap-2">
-                        <div className="relative w-fit">
-                            <img 
-                                src={imagePreview} 
-                                alt="Preview" 
-                                className="max-w-xs max-h-48 rounded border"
-                            />
-                            <button
-                                type="button"
-                                onClick={handleRemoveImage}
-                                className="absolute top-2 right-2 bg-red-700 text-white rounded-full p-1 flex items-center justify-center cursor-pointer hover:bg-red-800"
-                            >
-                                Supprimer l'image ×
-                            </button>
-                        </div>
+                    <div className="relative w-fit">
+                        <img src={imagePreview} alt="Preview" className="max-h-48 rounded-xl object-cover" />
+                        <button
+                            type="button"
+                            onClick={handleRemoveImage}
+                            className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white rounded-full p-1 cursor-pointer transition"
+                        >
+                            <X size={14} />
+                        </button>
                     </div>
                 )}
 
-                <Button
-                    className="self-end w-fit cursor-pointer"
-                    type="submit"
-                    disabled={isSubmitting}
-                >
-                    {isSubmitting ? "Creating..." : "Create"}
-                </Button>
+                <div className="flex items-center justify-between border-t border-gray-700 pt-3">
+                    <label htmlFor="media" className="cursor-pointer text-primary hover:text-primary/80 transition">
+                        <ImagePlus size={20} />
+                        <input type="file" id="media" accept="image/*" onChange={handleImageSelect} className="hidden" />
+                    </label>
+                    <Button type="submit" disabled={isSubmitting} className="cursor-pointer font-semibold px-5 rounded-full">
+                        {isSubmitting ? "Publication..." : "Publier"}
+                    </Button>
+                </div>
             </form>
         </div>
     )
