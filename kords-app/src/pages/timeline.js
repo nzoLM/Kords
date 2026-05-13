@@ -1,13 +1,10 @@
-import Navbar from "@/components/navbar"
 import Post from "@/components/post"
 import { useState, useEffect } from "react";
-import PostForm from "@/components/post-form";
 import CommentForm from "@/components/comment-form";
 
 const CATEGORIES = ["Général", "Apprentissage", "Guitare", "Tutoriel"]
 
 export default function Timeline() {
-    const [postForm, setPostForm] = useState(false);
     const [commentForm, setCommentForm] = useState(false);
     const [selectedPost, setSelectedPost] = useState(null);
     const [posts, setPosts] = useState([]);
@@ -18,7 +15,6 @@ export default function Timeline() {
     const openCommentForm = (post) => {
         setSelectedPost(post);
         setCommentForm(true);
-        setPostForm(false);
     };
 
     useEffect(() => {
@@ -39,83 +35,73 @@ export default function Timeline() {
         fetchPosts();
     }, []);
 
-    const modal = (postForm && !commentForm) || (commentForm && !postForm && selectedPost);
-
     return (
-        <div className="flex min-h-screen">
-            {modal && (
+        <main className="flex flex-col flex-1 max-w-2xl border-r border-gray-700">
+            {commentForm && selectedPost && (
                 <div
                     className="z-50 top-0 fixed w-full h-full bg-black/60 backdrop-blur-sm"
-                    onClick={() => { setPostForm(false); setCommentForm(false); setSelectedPost(null); }}
+                    onClick={() => { setCommentForm(false); setSelectedPost(null); }}
                 >
                     <div onClick={e => e.stopPropagation()}>
-                        {postForm && <PostForm closeForm={() => setPostForm(false)} />}
-                        {commentForm && selectedPost && (
-                            <CommentForm
-                                post={selectedPost}
-                                closeForm={() => { setCommentForm(false); setSelectedPost(null); }}
-                            />
-                        )}
+                        <CommentForm
+                            post={selectedPost}
+                            closeForm={() => { setCommentForm(false); setSelectedPost(null); }}
+                        />
                     </div>
                 </div>
             )}
 
-            <Navbar onClick={() => setPostForm(true)} />
-
-            <main className="flex flex-col flex-1 max-w-2xl border-r border-gray-700">
-                <div className="sticky top-0 bg-background/80 backdrop-blur-sm border-b border-gray-700 z-10">
-                    <div className="flex">
-                        {CATEGORIES.map((cat, i) => (
-                            <button
-                                key={cat}
-                                onClick={() => setActiveCategory(i)}
-                                className={`flex-1 py-3 text-sm font-medium transition border-b-2 cursor-pointer ${
-                                    activeCategory === i
-                                        ? "border-primary text-foreground"
-                                        : "border-transparent text-muted-foreground hover:text-foreground hover:bg-white/5"
+            <div className="sticky top-0 bg-background/80 backdrop-blur-sm border-b border-gray-700 z-10">
+                <div className="flex">
+                    {CATEGORIES.map((cat, i) => (
+                        <button
+                            key={cat}
+                            onClick={() => setActiveCategory(i)}
+                            className={`flex-1 py-3 text-sm font-medium transition border-b-2 cursor-pointer ${activeCategory === i
+                                    ? "border-primary text-foreground"
+                                    : "border-transparent text-muted-foreground hover:text-foreground hover:bg-white/5"
                                 }`}
-                            >
-                                {cat}
-                            </button>
-                        ))}
-                    </div>
+                        >
+                            {cat}
+                        </button>
+                    ))}
                 </div>
+            </div>
 
-                {loading && (
-                    <div className="flex items-center justify-center flex-1 py-20">
-                        <p className="text-muted-foreground text-sm">Chargement...</p>
-                    </div>
-                )}
+            {loading && (
+                <div className="flex items-center justify-center flex-1 py-20">
+                    <p className="text-muted-foreground text-sm">Chargement...</p>
+                </div>
+            )}
 
-                {error && (
-                    <div className="flex items-center justify-center flex-1 py-20">
-                        <p className="text-red-400 text-sm">Erreur : {error}</p>
-                    </div>
-                )}
+            {error && (
+                <div className="flex items-center justify-center flex-1 py-20">
+                    <p className="text-red-400 text-sm">Erreur : {error}</p>
+                </div>
+            )}
 
-                {!loading && !error && (
-                    <div className="flex flex-col divide-y divide-gray-700">
-                        {posts.length === 0 ? (
-                            <p className="p-8 text-center text-muted-foreground text-sm">Aucune publication pour le moment</p>
-                        ) : (
-                            posts.map((post) => (
-                                <Post
-                                    key={post.id}
-                                    id={post.id}
-                                    title={post.title}
-                                    content={post.content}
-                                    mediaUrl={post.mediaUrl}
-                                    mediaType={post.mediaType}
-                                    author={post.author.username}
-                                    reactions={post.reactions}
-                                    comments={post.comments}
-                                    createComment={() => openCommentForm(post)}
-                                />
-                            ))
-                        )}
-                    </div>
-                )}
-            </main>
-        </div>
+            {!loading && !error && (
+                <div className="flex flex-col divide-y divide-gray-700">
+                    {posts.length === 0 ? (
+                        <p className="p-8 text-center text-muted-foreground text-sm">Aucune publication pour le moment</p>
+                    ) : (
+                        posts.map((post) => (
+                            <Post
+                                key={post.id}
+                                id={post.id}
+                                title={post.title}
+                                content={post.content}
+                                mediaUrl={post.mediaUrl}
+                                mediaType={post.mediaType}
+                                author={post.author.username}
+                                reactions={post.reactions}
+                                comments={post.comments}
+                                createComment={() => openCommentForm(post)}
+                            />
+                        ))
+                    )}
+                </div>
+            )}
+        </main>
     )
 }
