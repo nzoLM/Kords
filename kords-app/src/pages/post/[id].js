@@ -1,4 +1,3 @@
-import Navbar from "@/components/navbar"
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { getAuthToken, getCurrentUserId } from "@/utils/auth";
@@ -147,7 +146,6 @@ export default function PostPage() {
     if (loading) {
         return (
             <div className="flex min-h-screen">
-                <Navbar />
                 <div className="flex items-center justify-center w-full">
                     <p>Chargement du post...</p>
                 </div>
@@ -158,7 +156,6 @@ export default function PostPage() {
     if (error || !post) {
         return (
             <div className="flex min-h-screen">
-                <Navbar />
                 <div className="flex flex-col items-center justify-center w-full">
                     <p className="text-red-500 mb-4">Erreur : {error || "Post non trouvé"}</p>
                     <Button onClick={() => router.push('/timeline')}>
@@ -171,7 +168,6 @@ export default function PostPage() {
 
     return (
         <div className="flex min-h-screen">
-            <Navbar />
             <div className="flex flex-col w-3/5 p-4">
                 {/* Post */}
                 <div className="p-4 w-full flex flex-col gap-2">

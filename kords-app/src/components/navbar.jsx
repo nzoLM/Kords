@@ -1,7 +1,7 @@
 import Logo from "./logo";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { isAuthenticated, logOut } from "@/utils/auth";
+import { isAuthenticated, logOut, getAuthToken } from "@/utils/auth";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Home, Search, MessageCircle, Music, Wrench, User, Settings, LogOut, LogIn, PenSquare } from "lucide-react";
@@ -13,9 +13,11 @@ const navLinks = [
     { href: "/tabs", label: "Tablatures", icon: Music },
     { href: "/tools", label: "Outils", icon: Wrench },
 ]
-    
+
 export default function Navbar({ onClick }) {
     const [logged, setLogged] = useState(false);
+    const [userData, setUserData] = useState(null);
+    const [error, setError] = useState(null)
     const router = useRouter();
 
     useEffect(() => {
@@ -23,6 +25,32 @@ export default function Navbar({ onClick }) {
     }, [])
 
     const handleLogout = () => logOut(router);
+
+    useEffect(() => {
+        async function fetchUserData() {
+            if (userData === null) {
+                try {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`,
+                        {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${getAuthToken()}`,
+                            }
+                        }
+                    )
+                    if (!response.ok) throw new Error('Erreur lors de la récupération des données utilisateur');
+                    const data = await response.json();
+                    setUserData(data)
+                } catch (err) {
+                    setError(err.message);
+                    console.error(err);
+                }
+            }
+            console.log(userData)
+        }
+        fetchUserData()
+    }, [])
 
     return (
         <div className="flex flex-col p-4 sticky top-0 h-screen w-64 border-r border-gray-700 shrink-0">
@@ -37,9 +65,8 @@ export default function Navbar({ onClick }) {
                         <Link
                             key={href}
                             href={href}
-                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition hover:bg-white/5 ${
-                                active ? "text-foreground bg-white/8 font-semibold" : "text-muted-foreground"
-                            }`}
+                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition hover:bg-white/5 ${active ? "text-foreground bg-white/8 font-semibold" : "text-muted-foreground"
+                                }`}
                         >
                             <Icon size={18} />
                             {label}
@@ -48,17 +75,15 @@ export default function Navbar({ onClick }) {
                 })}
 
                 {logged ? (
-                    <Link href="/profile" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition hover:bg-white/5 ${
-                        router.pathname === "/profile" ? "text-foreground bg-white/8 font-semibold" : "text-muted-foreground"
-                    }`}>
+                    <Link href="/profile" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition hover:bg-white/5 ${router.pathname === "/profile" ? "text-foreground bg-white/8 font-semibold" : "text-muted-foreground"
+                        }`}>
                         <User size={18} />
-                        Profil
+                        Profil - { userData!= null && userData.username }
                     </Link>
                 ) : null}
 
-                <Link href="/settings" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition hover:bg-white/5 ${
-                    router.pathname === "/settings" ? "text-foreground bg-white/8 font-semibold" : "text-muted-foreground"
-                }`}>
+                <Link href="/settings" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition hover:bg-white/5 ${router.pathname === "/settings" ? "text-foreground bg-white/8 font-semibold" : "text-muted-foreground"
+                    }`}>
                     <Settings size={18} />
                     Paramètres
                 </Link>
