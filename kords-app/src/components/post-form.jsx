@@ -68,10 +68,14 @@ export default function PostForm({ closeForm }) {
             }
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/post`, {
                 method: "POST",
-                headers: { 'Authorization': `Bearer ${getAuthToken()}` },
+                headers: {
+                    'Authorization': `Bearer ${getAuthToken()}`,
+                    // 'Content-Type': 'application/json',
+                },
                 body: formData
             })
             const result = await response.json()
+            console.log(response);
             if (!response.ok) throw new Error(result.message || "Erreur lors de la création.")
             closeForm()
         } catch (error) {
@@ -96,11 +100,10 @@ export default function PostForm({ closeForm }) {
                             key={value}
                             type="button"
                             onClick={() => handleCategoryClick(value)}
-                            className={`px-3 py-1 rounded-full text-xs font-semibold transition cursor-pointer ${
-                                selectedCategory === value
+                            className={`px-3 py-1 rounded-full text-xs font-semibold transition cursor-pointer ${selectedCategory === value
                                     ? "bg-primary text-primary-foreground"
                                     : "bg-muted text-muted-foreground hover:bg-primary/20 hover:text-primary"
-                            }`}
+                                }`}
                         >
                             {label}
                         </button>

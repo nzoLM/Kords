@@ -65,6 +65,61 @@ export const getPostByAuthorId = async (req: Request, res: Response) => {
 
         const posts = await prisma.post.findMany({
             where: { authorId: id },
+            orderBy: { createdAt: "desc" },
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        username: true,
+                        avatar: true,
+                    }
+                },
+                reactions: {
+                    select: {
+                        type: true,
+                        userId: true
+                    }
+                },
+                comments: {
+                }
+            }
+        }
+        );
+
+        return res.json(posts);
+    } catch (error) {
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+export const getPostByCurrentUser = async (req: Request, res: Response) => {
+    try {
+        const id = req.user?.userId;
+
+        if (typeof id !== 'string') {
+            return res.status(400).json({ error: 'Invalid post ID' });
+        }
+
+        const posts = await prisma.post.findMany({
+            where: { authorId: id },
+            orderBy: { createdAt: "desc" },
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        username: true,
+                        avatar: true,
+                    }
+                },
+                reactions: {
+                    select: {
+                        type: true,
+                        userId: true
+                    }
+                },
+                comments: {
+                }
+            }
         }
         );
 
@@ -109,7 +164,7 @@ export const createPost = async (req: Request, res: Response) => {
 
         return res.status(201).json(post);
     } catch (error) {
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: 'Internal server error', message : error?.message });
     }
 }
 
