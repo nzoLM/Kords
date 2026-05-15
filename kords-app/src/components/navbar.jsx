@@ -59,6 +59,13 @@ export default function Navbar({ onClick }) {
             </div>
 
             <nav className="flex flex-col gap-1 flex-1">
+                <Button
+                    onClick={onClick}
+                    className="w-full font-bold cursor-pointer flex items-center gap-2 mb-2"
+                >
+                    <PenSquare size={16} />
+                    Publier
+                </Button>
                 {navLinks.map(({ href, label, icon: Icon }) => {
                     const active = router.pathname === href;
                     return (
@@ -90,13 +97,13 @@ export default function Navbar({ onClick }) {
             </nav>
 
             <div className="flex flex-col gap-2 mt-4">
-                <Button
+                {/* <Button
                     onClick={onClick}
                     className="w-full font-bold cursor-pointer flex items-center gap-2"
                 >
                     <PenSquare size={16} />
                     Publier
-                </Button>
+                </Button> */}
 
                 {logged ? (
                     <button

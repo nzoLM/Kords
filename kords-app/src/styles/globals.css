@@ -47,7 +47,8 @@
   --popover: #303030;
   --popover-foreground: #ffffff;
   
-  --radius: 2rem;
+  /* --radius: 2rem; */
+  --radius: 0.5rem;
 }
 
 /* Mode Neutre */
