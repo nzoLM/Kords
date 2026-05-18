@@ -1,12 +1,16 @@
-"use client";
-
+import { useRef } from "react";
 import { Button } from "./ui/button";
 
 export default function MetronomeClient() {
-    
-    const ctx = new window.AudioContext();
+    const ctxRef = useRef(null);
+
+    function getCtx() {
+        if (!ctxRef.current) ctxRef.current = new AudioContext();
+        return ctxRef.current;
+    }
 
     function playClick() {
+        const ctx = getCtx();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
 
