@@ -1,0 +1,31 @@
+import { useRef } from "react";
+import { Button } from "./ui/button";
+
+export default function MetronomeClient() {
+    const ctxRef = useRef(null);
+
+    function getCtx() {
+        if (!ctxRef.current) ctxRef.current = new AudioContext();
+        return ctxRef.current;
+    }
+
+    function playClick() {
+        const ctx = getCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);       
+
+        osc.frequency.value = 1000;          // hauteur du son (Hz)
+        gain.gain.setValueAtTime(0.5, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.1);
+    }
+
+    return (
+        <Button onClick={() => playClick()}> Click to make a sound</Button>
+    )
+}
