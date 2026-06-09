@@ -13,7 +13,7 @@ router.put("/:id", authenticate, updatePostById);
 router.post("/:id/like", authenticate, likePost);
 router.post("/:id/comment", authenticate, commentPost)
 router.get("/", getTimeline)
-router.get("/:id", getPostByAuthorId)
+router.get("/author/:id", getPostByAuthorId)
 router.get("/:id", getPostById)
 
 export default router;

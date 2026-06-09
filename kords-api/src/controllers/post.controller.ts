@@ -41,13 +41,24 @@ export const getPostById = async (req: Request, res: Response) => {
 
         const posts = await prisma.post.findUnique({
             where: { id },
-            select: {
-                comments: {},
-                reactions: {},
-                author : {}
+            include: {
+                comments: {
+                    include: {
+                        author: {
+                            select: { id: true, username: true, avatar: true }
+                        }
+                    },
+                    orderBy: { createdAt: "asc" }
+                },
+                reactions: {
+                    select: { type: true, userId: true }
+                },
+                author: {
+                    select: { id: true, username: true, avatar: true }
+                },
             }
         }
-        );
+        );  
 
         return res.json(posts);
     } catch (error) {
