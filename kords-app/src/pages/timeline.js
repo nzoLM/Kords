@@ -36,7 +36,7 @@ export default function Timeline() {
     }, []);
 
     return (
-        <main className="flex flex-col flex-1 max-w-2xl border-r border-gray-700">
+        <main className="flex flex-col flex-1 border-r border-gray-700">
             {commentForm && selectedPost && (
                 <div
                     className="z-50 top-0 fixed w-full h-full bg-black/60 backdrop-blur-sm"

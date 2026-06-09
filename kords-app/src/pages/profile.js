@@ -77,7 +77,7 @@ export default function Profile() {
   }
 
   return (
-    <main className="flex flex-col flex-1 max-w-2xl border-r border-gray-700">
+    <main className="flex flex-col flex-1 border-r border-gray-700">
       <div className="px-6 py-6">
         <div className="flex items-center gap-4 mb-6">
           <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center text-2xl font-bold text-muted-foreground">
