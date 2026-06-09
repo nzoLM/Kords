@@ -1,10 +1,13 @@
 import { useRef, useState, useEffect } from "react";
 import { Button } from "./ui/button";
+import { Plus, Minus, Play, Pause } from "lucide-react";
+import BpmKnob from "@/components/knob";
 
 export default function MetronomeClient() {
 
     const ctxRef = useRef(null);
     const [bpm, setBpm] = useState(60);
+    const [isStarted, setIsStarted] = useState(false);
     const nextNoteTime = useRef(0);
     const timerRef = useRef(null);
     const bpmRef = useRef(bpm);
@@ -34,12 +37,14 @@ export default function MetronomeClient() {
     }
 
     function start() {
+        setIsStarted(true)
         const ctx = getCtx();
         nextNoteTime.current = ctx.currentTime;
         scheduler();
     }
 
     function stop() {
+        setIsStarted(false)
         clearTimeout(timerRef.current);
     }
 
@@ -59,16 +64,31 @@ export default function MetronomeClient() {
 
 
     return (
-        <div>
-            <div>
-                <p>BPM: {bpm}</p>
-                <input className="w-8" type="number" value={bpm} />
-                <div className="flex flex-row">
-                    <Button onClick={() => setBpm(bpm - 1)} className="rounded-full text-xl w-8 h-8">-</Button>
-                    <Button onClick={() => setBpm(bpm + 1)} className="rounded-full w-8 h-8 text-xl">+</Button>
+        <div className="flex w-full justify-center items-center">
+            <div className="flex flex-col justify-center items-center gap-4">
+                <div className="flex gap-2 text-xl">
+                    <label htmlFor="bpm">BPM: </label>
+                    <input name="bpm" id="bpm" className="w-10 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" type="number" value={bpm} />
                 </div>
-                <Button onClick={() => start()}>Start</Button>
-                <Button onClick={() => stop()}>Stop</Button>
+                <BpmKnob bpm={bpm} onChange={(newBpm) => setBpm(newBpm)}/>
+                <div className="flex flex-row gap-2">
+                    <Button onClick={() => setBpm(bpm + 1)} className="cursor-pointer rounded-full w-12 h-12 text-xl">
+                        <Plus size={32}></Plus>
+                    </Button>
+                    <Button onClick={() => setBpm(bpm - 1)} className="cursor-pointer rounded-full w-12 h-12 text-2xl">
+                        <Minus size={32}></Minus>
+                    </Button>
+                </div>
+
+                {
+                    isStarted ? <Button className="cursor-pointer w-12 h-12"
+                        onClick={() => stop()}>
+                            <Pause size={32}/>
+                        </Button> :
+                        <Button className="cursor-pointer w-12 h-12" onClick={() => start()}>
+                            <Play size={32}/>
+                        </Button>
+                }
             </div>
         </div>
     )
