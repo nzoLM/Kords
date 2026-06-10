@@ -74,7 +74,12 @@ export default function BpmKnob({ bpm, onChange }) {
           strokeWidth={4}
           strokeLinecap="round"
         />
+
       )}
+      {(() => {
+        const pt = polarToCartesian(CX, CY, R - 20, activeEnd);
+        return <circle cx={pt.x} cy={pt.y} r={8} fill="#" />;
+      })()}
     </svg>
   );
 }
