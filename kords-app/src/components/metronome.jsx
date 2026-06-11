@@ -7,10 +7,14 @@ export default function MetronomeClient() {
 
     const ctxRef = useRef(null);
     const [bpm, setBpm] = useState(60);
+    const [tempo, setTempo] = useState(4);
+    const [tempoCount, setTempoCount] = useState(0)
     const [isStarted, setIsStarted] = useState(false);
     const nextNoteTime = useRef(0);
     const timerRef = useRef(null);
     const bpmRef = useRef(bpm);
+    const tempoRef = useRef(tempo);
+    const tempoCountRef = useRef(tempoCount);
 
     const LOOKAHEAD = 0.1;
     const SCHEDULE_INTERVAL = 25;
@@ -19,8 +23,12 @@ export default function MetronomeClient() {
         bpmRef.current = bpm;
     }, [bpm])
 
+    useEffect(() => {
+        tempoRef.current = tempo;
+        console.log(tempoRef.current)
+    }, [tempo])
+
     function getCtx() {
-        console.log(ctxRef.time)
         if (!ctxRef.current) ctxRef.current = new AudioContext();
         return ctxRef.current;
     }
@@ -30,9 +38,9 @@ export default function MetronomeClient() {
 
         while (nextNoteTime.current < ctx.currentTime + LOOKAHEAD) {
             playClick(nextNoteTime.current);
+            tempoCountRef.current += 1;
             nextNoteTime.current += 60 / bpmRef.current;
         }
-
         timerRef.current = setTimeout(scheduler, SCHEDULE_INTERVAL);
     }
 
@@ -44,33 +52,53 @@ export default function MetronomeClient() {
     }
 
     function stop() {
+        setTempoCount(0);
+        tempoCountRef.current = 0;
         setIsStarted(false)
         clearTimeout(timerRef.current);
     }
 
     function playClick(time) {
-
         const ctx = getCtx();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.connect(gain);
         gain.connect(ctx.destination);
-        osc.frequency.value = 1000;
+        osc.frequency.value = (tempoCountRef.current % tempoRef.current) === 0 ? 2000 : 1000;
         gain.gain.setValueAtTime(0.5, time);
         gain.gain.exponentialRampToValueAtTime(0.001, time + 0.08);
         osc.start(time);
         osc.stop(time + 0.1);
     }
 
-
     return (
         <div className="flex w-full justify-center items-center">
             <div className="flex flex-col justify-center items-center gap-4">
-                <div className="flex gap-2 text-xl">
-                    <label htmlFor="bpm">BPM: </label>
-                    <input name="bpm" id="bpm" className="w-10 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" type="number" value={bpm} />
+                <div className="">
+                    <div className="flex gap-2 text-xl justify-center items-center">
+                        <label htmlFor="tempo">Tempo:</label>
+                        <input name="tempo" id="tempo" className="w-10 text-center
+                     [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
+                      [&::-webkit-inner-spin-button]:appearance-none" type="number" value={tempo}
+                            min={1}
+                      onChange={(e) => {
+                                setTempo(e.target.value)
+                            }}
+                        />
+                    </div>
+                    <BpmKnob bpm={bpm} onChange={(newBpm) => setBpm(newBpm)} />
                 </div>
-                <BpmKnob bpm={bpm} onChange={(newBpm) => setBpm(newBpm)}/>
+                <div className="flex gap-2 text-xl justify-center items-center">
+                    <label htmlFor="bpm">BPM: </label>
+                    <input name="bpm" id="bpm" className="w-10 text-center [appearance:textfield]
+                    [&::-webkit-outer-spin-button]:appearance-none
+                    [&::-webkit-inner-spin-button]:appearance-none" type="number" value={bpm}
+                        min={20}
+                        max={280}
+                    onChange={(e) => {
+                            setBpm(e.target.value)
+                        }} />
+                </div>
                 <div className="flex flex-row gap-2">
                     <Button onClick={() => setBpm(bpm + 1)} className="cursor-pointer rounded-full w-12 h-12 text-xl">
                         <Plus size={32}></Plus>
@@ -79,14 +107,13 @@ export default function MetronomeClient() {
                         <Minus size={32}></Minus>
                     </Button>
                 </div>
-
                 {
                     isStarted ? <Button className="cursor-pointer w-12 h-12"
                         onClick={() => stop()}>
-                            <Pause size={32}/>
-                        </Button> :
+                        <Pause size={32} />
+                    </Button> :
                         <Button className="cursor-pointer w-12 h-12" onClick={() => start()}>
-                            <Play size={32}/>
+                            <Play size={32} />
                         </Button>
                 }
             </div>

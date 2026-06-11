@@ -41,13 +41,24 @@ export const getPostById = async (req: Request, res: Response) => {
 
         const posts = await prisma.post.findUnique({
             where: { id },
-            select: {
-                comments: {},
-                reactions: {},
-                author : {}
+            include: {
+                comments: {
+                    include: {
+                        author: {
+                            select: { id: true, username: true, avatar: true }
+                        }
+                    },
+                    orderBy: { createdAt: "asc" }
+                },
+                reactions: {
+                    select: { type: true, userId: true }
+                },
+                author: {
+                    select: { id: true, username: true, avatar: true }
+                },
             }
         }
-        );
+        );  
 
         return res.json(posts);
     } catch (error) {
@@ -135,7 +146,7 @@ export const createPost = async (req: Request, res: Response) => {
             return res.status(401).json({ error: 'User not authentified.' });
         }
 
-        const { content, title, category } = req.body;
+        const { content, title, category, mediaType: bodyMediaType } = req.body;
         const file = (req as any).file;
 
         if (!content || !title) {
@@ -147,7 +158,7 @@ export const createPost = async (req: Request, res: Response) => {
 
         if (file) {
             mediaUrl = await uploadImage(file, "posts");
-            mediaType = file.mimetype;
+            mediaType = bodyMediaType ?? file.mimetype.split("/")[0];
         }
 
         const post = await prisma.post.create({
