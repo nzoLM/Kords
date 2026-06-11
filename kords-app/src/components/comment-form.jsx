@@ -33,7 +33,7 @@ export default function CommentForm({ closeForm, post }) {
     }
 
     return (
-        <div className="bg-background border border-gray-700 w-full max-w-xl rounded-2xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col shadow-2xl">
+        <div className="bg-background border border-gray-700 w-full max-w-xl rounded-2xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col">
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700">
                 <button onClick={closeForm} className="text-muted-foreground hover:text-foreground transition cursor-pointer rounded-full p-1 hover:bg-white/10">
                     <X size={20} />

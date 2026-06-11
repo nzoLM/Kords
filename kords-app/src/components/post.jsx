@@ -82,7 +82,7 @@ export default function Post({ id, title, content, mediaUrl, mediaType, author, 
                     <div onClick={e => {
                         e.stopPropagation();
                         setShowImage(null)
-                    }} className="top-0 left-0 fixed z-100 backdrop-blur-sm h-screen w-full bg-black/80 cursor-default">
+                    }} className="top-0 left-0 fixed z-100 backdrop-blur-sm h-screen w-full cursor-default bg-black/60">
                         <Button className="absolute right-16 top-16">
                             <X size={16} />
                         </Button>

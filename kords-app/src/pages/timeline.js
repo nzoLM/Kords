@@ -39,7 +39,7 @@ export default function Timeline() {
         <main className="flex flex-col flex-1 border-r border-gray-700">
             {commentForm && selectedPost && (
                 <div
-                    className="z-50 top-0 fixed w-full h-full bg-black/60 backdrop-blur-sm"
+                    className="z-50 left-0 top-0 fixed w-screen h-full backdrop-blur-sm"
                     onClick={() => { setCommentForm(false); setSelectedPost(null); }}
                 >
                     <div onClick={e => e.stopPropagation()}>

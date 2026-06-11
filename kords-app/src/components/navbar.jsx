@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import { isAuthenticated, logOut, getAuthToken } from "@/utils/auth";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { Home, Search, MessageCircle, Music, Wrench, User, Settings, LogOut, LogIn, PenSquare } from "lucide-react";
+import { Home, Search, MessageCircle, Music, Wrench, User, Settings, LogOut, LogIn, PenSquare, MapIcon } from "lucide-react";
 
 const navLinks = [
     { href: "/timeline", label: "Accueil", icon: Home },
@@ -12,6 +12,7 @@ const navLinks = [
     { href: "/messages", label: "Messages", icon: MessageCircle },
     { href: "/tabs", label: "Tablatures", icon: Music },
     { href: "/tools", label: "Outils", icon: Wrench },
+    { href: "/map", label: "Carte", icon: MapIcon },
 ]
 
 export default function Navbar({ onClick }) {
@@ -67,7 +68,7 @@ export default function Navbar({ onClick }) {
                     Publier
                 </Button>
                 {navLinks.map(({ href, label, icon: Icon }) => {
-                    const active = router.pathname === href;
+                    const active = router.pathname.includes(href);
                     return (
                         <Link
                             key={href}
