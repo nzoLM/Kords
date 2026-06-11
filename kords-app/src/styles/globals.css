@@ -13,80 +13,97 @@
 
 :root {
   /* Mode Violet (défaut) */
-  --background: #170d1f;        /* Violet très foncé */
-  --foreground: #ffffff;         /* Blanc */
-  
-  --primary: #d4b2e4;           /* Violet clair */
-  --primary-foreground: #170d1f; /* Violet foncé */
-  
-  --secondary: #5E5E5E;         /* Gris moyen */
+  --background: #170d1f;
+  /* Violet très foncé */
+  --foreground: #ffffff;
+  /* Blanc */
+
+  --primary: #d4b2e4;
+  /* Violet clair */
+  --primary-foreground: #170d1f;
+  /* Violet foncé */
+
+  --secondary: #5E5E5E;
+  /* Gris moyen */
   --secondary-foreground: #ffffff;
-  
-  --accent: #00ad74;            /* Vert success */
+
+  --accent: #00ad74;
+  /* Vert success */
   --accent-foreground: #ffffff;
-  
-  --destructive: #df3232;       /* Rouge erreur */
+
+  --destructive: #df3232;
+  /* Rouge erreur */
   --destructive-foreground: #ffffff;
-  
-  --warning: #ef9600;           /* Orange warning */
+
+  --warning: #ef9600;
+  /* Orange warning */
   --warning-foreground: #000000;
-  
-  --info: #3b82f6;              /* Bleu info */
+
+  --info: #3b82f6;
+  /* Bleu info */
   --info-foreground: #ffffff;
-  
-  --muted: #303030;             /* Gris très foncé */
-  --muted-foreground: #C6C6C6;  /* Gris clair */
-  
+
+  --muted: #303030;
+  /* Gris très foncé */
+  --muted-foreground: #C6C6C6;
+  /* Gris clair */
+
   --border: #5E5E5E;
   --input: #303030;
   --ring: #d4b2e4;
-  
+
   --card: #170d1f;
   --card-foreground: #ffffff;
-  
+
   --popover: #303030;
   --popover-foreground: #ffffff;
-  
+
   /* --radius: 2rem; */
   --radius: 0.5rem;
 }
+
 button {
   cursor: pointer;
 }
+
 /* Mode Neutre */
-[data-theme="neutral"], .theme-neutral {
-  --background: #000000;        /* Noir pur */
+[data-theme="neutral"],
+.theme-neutral {
+  --background: #000000;
+  /* Noir pur */
   --foreground: #ffffff;
-  
-  --primary: #ffffff;           /* Blanc */
+
+  --primary: #ffffff;
+  /* Blanc */
   --primary-foreground: #000000;
-  
+
   --secondary: #5E5E5E;
   --secondary-foreground: #ffffff;
-  
-  --accent: #C6C6C6;            /* Gris clair en accent neutre */
+
+  --accent: #C6C6C6;
+  /* Gris clair en accent neutre */
   --accent-foreground: #000000;
-  
+
   /* Les couleurs fonctionnelles restent identiques */
   --destructive: #df3232;
   --destructive-foreground: #ffffff;
-  
+
   --warning: #ef9600;
   --warning-foreground: #000000;
-  
+
   --info: #3b82f6;
   --info-foreground: #ffffff;
-  
+
   --muted: #303030;
   --muted-foreground: #919191;
-  
+
   --border: #5E5E5E;
   --input: #303030;
   --ring: #C6C6C6;
-  
+
   --card: #303030;
   --card-foreground: #ffffff;
-  
+
   --popover: #303030;
   --popover-foreground: #ffffff;
 }
@@ -128,7 +145,44 @@ button {
   :root {
     --background: #000000;
     --foreground: #FFFFFF;
+    --primary: #ffffff;
+    /* Blanc */
+    --primary-foreground: #000000;
+
+    --secondary: #5E5E5E;
+    --secondary-foreground: #ffffff;
+
+    --accent: #C6C6C6;
+    /* Gris clair en accent neutre */
+    --accent-foreground: #000000;
+
+    /* Les couleurs fonctionnelles restent identiques */
+    --destructive: #df3232;
+    --destructive-foreground: #ffffff;
+
+    --warning: #ef9600;
+    --warning-foreground: #000000;
+
+    --info: #3b82f6;
+    --info-foreground: #ffffff;
+
+    --muted: #303030;
+    --muted-foreground: #919191;
+
+    --border: #5E5E5E;
+    --input: #303030;
+    --ring: #C6C6C6;
+
+    --card: #303030;
+    --card-foreground: #ffffff;
+
+    --popover: #303030;
+    --popover-foreground: #ffffff;
   }
+}
+
+#knob-circle {
+  fill: var(--secondary)
 }
 
 body {
@@ -137,6 +191,7 @@ body {
   font-family: "Poppins", sans-serif;
   /* font-weight: 500; */
 }
+
 /*
 .dark {
   --background: oklch(0.145 0 0);

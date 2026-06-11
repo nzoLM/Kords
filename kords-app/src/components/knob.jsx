@@ -56,7 +56,7 @@ export default function BpmKnob({ bpm, onChange }) {
       className="cursor-grab active:cursor-grabbing select-none"
       onMouseDown={onMouseDown}
     >
-      <circle cx={CX} cy={CY} r={R - 8} fill="white" stroke="#e5e7eb" strokeWidth={1} />
+      <circle id="knob-circle" cx={CX} cy={CY} r={R - 8} fill="white" stroke="#e5e7eb" strokeWidth={2} />
 
       <path
         d={describeArc(CX, CY, R, START_ANGLE, END_ANGLE)}
