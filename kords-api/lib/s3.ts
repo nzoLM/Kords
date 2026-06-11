@@ -1,34 +1,31 @@
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { createClient } from "@supabase/supabase-js";
 import 'multer';
 
-const s3Client = new S3Client({
-    region: process.env.SUPABASE_PROJECT_REGION,
-    credentials: {
-        accessKeyId: process.env.SUPABASE_ACCESS_KEY_ID!,
-        secretAccessKey: process.env.SUPABASE_SECRET_ACCESS_KEY!,
-    },
-    endpoint: process.env.SUPABASE_DATA_ENDPOINT,
-});
+const supabase = createClient(
+    `https://${process.env.SUPABASE_PROJECT_ID}.supabase.co`,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+);
 
 export const uploadImage = async (
     file: Express.Multer.File,
     folder: string
 ): Promise<string> => {
-    const fileName = `${Date.now()}-${file.originalname}`;
+    const sanitizedName = file.originalname
+        .normalize("NFD")
+        .replace(/[̀-ͯ]/g, "")
+        .replace(/[^a-zA-Z0-9._-]/g, "_");
+    const fileName = `${Date.now()}-${sanitizedName}`;
     const key = `${folder}/${fileName}`;
 
-    try {
-        await s3Client.send(
-            new PutObjectCommand({
-                Bucket: "Media",
-                Key: key,
-                Body: file.buffer,
-                ContentType: file.mimetype,
-            })
-        );
+    const { error } = await supabase.storage
+        .from(process.env.SUPABASE_BUCKET_NAME!)
+        .upload(key, file.buffer, { contentType: file.mimetype });
 
-        return `https://${process.env.SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/${process.env.SUPABASE_BUCKET_NAME}/${key}`;
-    } catch (error) {
-        throw new Error(`S3 upload failed: ${error}`);
-    }
+    if (error) throw new Error(`Upload failed: ${error.message}`);
+
+    const { data } = supabase.storage
+        .from(process.env.SUPABASE_BUCKET_NAME!)
+        .getPublicUrl(key);
+
+    return data.publicUrl;
 };

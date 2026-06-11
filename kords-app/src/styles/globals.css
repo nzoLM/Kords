@@ -50,7 +50,9 @@
   /* --radius: 2rem; */
   --radius: 0.5rem;
 }
-
+button {
+  cursor: pointer;
+}
 /* Mode Neutre */
 [data-theme="neutral"], .theme-neutral {
   --background: #000000;        /* Noir pur */
