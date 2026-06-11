@@ -3,6 +3,7 @@ import { Button } from "./ui/button";
 import { Plus, Minus, Play, Pause } from "lucide-react";
 import BpmKnob from "@/components/knob";
 
+const signatureTempsList = ["1/4", "2/4", "3/4", "4/4", "5/4", "7/4", "5/8", "6/8", "7/8", "9/8", "12/8"]
 export default function MetronomeClient() {
 
     const ctxRef = useRef(null);
@@ -25,7 +26,6 @@ export default function MetronomeClient() {
 
     useEffect(() => {
         tempoRef.current = tempo;
-        console.log(tempoRef.current)
     }, [tempo])
 
     function getCtx() {
@@ -76,17 +76,32 @@ export default function MetronomeClient() {
             <div className="flex flex-col justify-center items-center gap-4">
                 <div className="">
                     <div className="flex gap-2 text-xl justify-center items-center">
-                        <label htmlFor="tempo">Tempo:</label>
-                        <input name="tempo" id="tempo" className="w-10 text-center
+                        <label htmlFor="tempo">Signature temps:</label>
+                        {/* <input name="tempo" id="tempo" className="w-10 text-center
                      [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
                       [&::-webkit-inner-spin-button]:appearance-none" type="number" value={tempo}
                             min={1}
-                      onChange={(e) => {
+                            onChange={(e) => {
                                 setTempo(e.target.value)
                             }}
-                        />
+                        /> */}
+                        <select
+                            name="tempo" id="tempo" className=" text-center
+                     [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
+                      [&::-webkit-inner-spin-button]:appearance-none" type="number" value={tempo}
+                            min={1}
+                            onChange={(e) => {
+                                setTempo(e.target.value)
+                            }}
+                        >{signatureTempsList.map((value) => (
+                            <option className="bg-background" value={value[0]}>{value}</option>
+                        ))}</select>
                     </div>
-                    <BpmKnob bpm={bpm} onChange={(newBpm) => setBpm(newBpm)} />
+                    <div className="flex justify-center items-center">
+                        <BpmKnob bpm={bpm} onChange={(newBpm) => {
+                            setBpm(newBpm)
+                        }} />
+                    </div>
                 </div>
                 <div className="flex gap-2 text-xl justify-center items-center">
                     <label htmlFor="bpm">BPM: </label>
@@ -95,7 +110,7 @@ export default function MetronomeClient() {
                     [&::-webkit-inner-spin-button]:appearance-none" type="number" value={bpm}
                         min={20}
                         max={280}
-                    onChange={(e) => {
+                        onChange={(e) => {
                             setBpm(e.target.value)
                         }} />
                 </div>
