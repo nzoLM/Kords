@@ -2,7 +2,7 @@ import Post from "@/components/post"
 import { useState, useEffect } from "react";
 import CommentForm from "@/components/comment-form";
 
-const CATEGORIES = ["Général", "Apprentissage", "Guitare", "Tutoriel"]
+const CATEGORIES = {"Général" : "GENERAL", "Apprentissage" : "LEARNING", "Guitare" : "GUITAR", "Tutoriel" :"TUTORIAL"}
 
 export default function Timeline() {
     const [commentForm, setCommentForm] = useState(false);
@@ -10,7 +10,7 @@ export default function Timeline() {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [activeCategory, setActiveCategory] = useState(0);
+    const [activeCategory, setActiveCategory] = useState("GENERAL");
 
     const openCommentForm = (post) => {
         setSelectedPost(post);
@@ -53,11 +53,11 @@ export default function Timeline() {
 
             <div className="sticky top-0 bg-background/80 backdrop-blur-sm border-b border-gray-700 z-10">
                 <div className="flex">
-                    {CATEGORIES.map((cat, i) => (
+                    {Object.keys(CATEGORIES).map((cat, i) => (
                         <button
-                            key={cat}
-                            onClick={() => setActiveCategory(i)}
-                            className={`flex-1 py-3 text-sm font-medium transition border-b-2 cursor-pointer ${activeCategory === i
+                            key={i}
+                            onClick={() => setActiveCategory(CATEGORIES[cat])}
+                            className={`flex-1 py-3 text-sm font-medium transition border-b-2 cursor-pointer ${activeCategory === CATEGORIES[cat]
                                     ? "border-primary text-foreground"
                                     : "border-transparent text-muted-foreground hover:text-foreground hover:bg-white/5"
                                 }`}
@@ -86,6 +86,7 @@ export default function Timeline() {
                         <p className="p-8 text-center text-muted-foreground text-sm">Aucune publication pour le moment</p>
                     ) : (
                         posts.map((post) => (
+                            post.category === activeCategory &&
                             <Post
                                 key={post.id}
                                 id={post.id}

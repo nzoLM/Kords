@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { useRouter } from "next/router";
 
 import { Heart, MessageCircle, Share2, Bookmark, X } from "lucide-react";
+import Link from "next/link";
 
 export default function Post({ id, title, content, mediaUrl, mediaType, author, reactions, createComment, comments }) {
     const currentUserId = getCurrentUserId();
@@ -57,9 +58,10 @@ export default function Post({ id, title, content, mediaUrl, mediaType, author, 
             className="px-4 py-5 w-full flex flex-col gap-3 cursor-pointer hover:bg-white/5 transition"
         >
             <div className="flex gap-3 items-center">
-                <div className="rounded-full w-9 h-9 bg-primary/30 flex items-center justify-center text-primary font-bold text-sm shrink-0">
+                <Link onClick={e => e.stopPropagation()}
+                 href={"/profile"} className="rounded-full w-9 h-9 bg-primary/30 flex items-center justify-center text-primary font-bold text-sm shrink-0">
                     {author?.[0]?.toUpperCase()}
-                </div>
+                </Link>
                 <span className="font-semibold text-sm">{author}</span>
             </div>
 
