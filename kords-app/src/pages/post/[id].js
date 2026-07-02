@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { getAuthToken, getCurrentUserId } from "@/utils/auth";
 import { Button } from "@/components/ui/button";
 import { Heart, MessageCircle, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 export default function PostPage() {
     const router = useRouter();
@@ -168,13 +169,11 @@ export default function PostPage() {
             {/* Post */}
             <div className="flex flex-col gap-4 pb-6 border-b border-gray-700">
                 <div className="flex items-center gap-3">
-                    <div className="rounded-full w-10 h-10 bg-white/10 shrink-0" />
-                    <div>
-                        <p className="font-semibold">{post.author?.username || "Utilisateur"}</p>
-                        <p className="text-xs text-muted-foreground">
-                            {new Date(post.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                        </p>
-                    </div>
+                    <Link onClick={e => e.stopPropagation()}
+                        href={"/profile"} className="rounded-full w-9 h-9 bg-primary/30 flex items-center justify-center text-primary font-bold text-sm shrink-0">
+                        {post.author?.username[0]?.toUpperCase()}
+                    </Link>
+                    <span className="font-semibold text-sm">{post.author?.username}</span>
                 </div>
                 <h1 className="text-2xl font-bold">{post.title}</h1>
                 <p className="text-muted-foreground leading-relaxed">{post.content}</p>

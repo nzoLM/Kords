@@ -9,10 +9,10 @@ import { Home, Search, MessageCircle, Music, Wrench, User, Settings, LogOut, Log
 const navLinks = [
     { href: "/timeline", label: "Accueil", icon: Home },
     { href: "/search", label: "Recherche", icon: Search },
-    { href: "/messages", label: "Messages", icon: MessageCircle },
-    { href: "/tabs", label: "Tablatures", icon: Music },
+    // { href: "/messages", label: "Messages", icon: MessageCircle },
+    // { href: "/tabs", label: "Tablatures", icon: Music },
     { href: "/tools", label: "Outils", icon: Wrench },
-    { href: "/map", label: "Carte", icon: MapIcon },
+    // { href: "/map", label: "Carte", icon: MapIcon },
 ]
 
 export default function Navbar({ onClick }) {
