@@ -11,10 +11,10 @@ const TOOLS = [
 export default function Tools() {
 
     return (
-        <div className="flex flex-col">
+        <div className="grid grid-cols-2 w-full">
             {
                 TOOLS.map((tool) => (
-                    <Link key={tool.name} href={"/tools" + tool.link} className="flex p-4 m-4 gap-3 items-center rounded-lg border border-border hover:bg-white/5">
+                    <Link key={tool.name} href={"/tools" + tool.link} className="flex p-4 gap-3 items-center justify-center border border-border hover:bg-white/5">
                         <span className="text-foreground">{tool.name} </span>
                         {tool.icon}
                     </Link>
