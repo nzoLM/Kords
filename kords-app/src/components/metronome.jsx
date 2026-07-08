@@ -2,10 +2,12 @@ import { useRef, useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Plus, Minus, Play, Pause } from "lucide-react";
 import BpmKnob from "@/components/knob";
+import { useRouter } from "next/router";
 
-const signatureTempsList = ["1/4", "2/4", "3/4", "4/4", "5/4", "7/4", "5/8", "6/8", "7/8", "9/8", "12/8"]
+const signatureTempsList = ["1/4", "2/4", "3/4", "4/4", "5/4", "7/4", "5/8", "6/8", "7/8", "9/8", "12/8"];
+
 export default function MetronomeClient() {
-
+    const router = useRouter();
     const ctxRef = useRef(null);
     const [bpm, setBpm] = useState(60);
     const [tempo, setTempo] = useState(4);
@@ -21,6 +23,11 @@ export default function MetronomeClient() {
     const SCHEDULE_INTERVAL = 25;
 
     useEffect(() => {
+        if (bpm < 20) {
+            setBpm(20)
+        } else if (bpm > 280) {
+            setBpm(280);
+        }
         bpmRef.current = bpm;
     }, [bpm])
 
@@ -72,19 +79,13 @@ export default function MetronomeClient() {
     }
 
     return (
-        <div className="flex w-full justify-center items-center">
+        <div className="relative flex w-full justify-center items-center">
+            <Button className="absolute top-5 left-5" onClick={() => router.push('/tools')}>&larr; Retour</Button>
+
             <div className="flex flex-col justify-center items-center gap-4">
                 <div className="">
                     <div className="flex gap-2 text-xl justify-center items-center">
                         <label htmlFor="tempo">Signature temps:</label>
-                        {/* <input name="tempo" id="tempo" className="w-10 text-center
-                     [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
-                      [&::-webkit-inner-spin-button]:appearance-none" type="number" value={tempo}
-                            min={1}
-                            onChange={(e) => {
-                                setTempo(e.target.value)
-                            }}
-                        /> */}
                         <select
                             name="tempo" id="tempo" className=" text-center
                      [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none

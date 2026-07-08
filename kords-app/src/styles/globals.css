@@ -141,22 +141,20 @@ button {
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --background: #000000;
     --foreground: #FFFFFF;
     --primary: #ffffff;
-    /* Blanc */
+    
     --primary-foreground: #000000;
 
     --secondary: #5E5E5E;
     --secondary-foreground: #ffffff;
 
     --accent: #C6C6C6;
-    /* Gris clair en accent neutre */
     --accent-foreground: #000000;
 
-    /* Les couleurs fonctionnelles restent identiques */
     --destructive: #df3232;
     --destructive-foreground: #ffffff;
 
@@ -179,7 +177,7 @@ button {
     --popover: #303030;
     --popover-foreground: #ffffff;
   }
-}
+} */
 
 #knob-circle {
   fill: var(--secondary)
