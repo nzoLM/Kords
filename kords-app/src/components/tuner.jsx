@@ -24,10 +24,16 @@ export default function TunerClient() {
     const [pitch, setPitch] = useState(null);
     const [clarity, setClarity] = useState(0);
     const [isListening, setIsListening] = useState(false);
+    const [centsOff, setCentsOff] = useState(0)
+    const [lockedIndex, setLockedIndex] = useState(null)
     const audioContextRef = useRef(null)
     const streamRef = useRef(null)
     const rafRef = useRef(null)
-    const noteRef = useRef(null);
+    const lockedIndexRef = useRef(null);
+    const lastRMSRef = useRef(0);
+    const silenceCounterRef = useRef(0);
+    const smoothedCentsRef = useRef(0);
+
 
     const start = async () => {
 
@@ -52,15 +58,51 @@ export default function TunerClient() {
 
         const detect = () => {
             analyser.getFloatTimeDomainData(input);
+            const rms = getRMS(input);
             const [freq, clarity] = detector.findPitch(input, audioContext.sampleRate);
 
-            if (clarity > 0.9) {
-                setPitch(freq);
-                setClarity(clarity);
+            // pour détecter une attaque sur une corde
+            const isOnset = rms > lastRMSRef.current * 1.5 && rms > 0.01;
+            lastRMSRef.current = rms;
+
+            if (clarity > 0.9 && rms > 0.005) {
+                silenceCounterRef.current = 0;
+                const note = findClosestString(freq, tunings["E standard"]);
+                if (note != null) {
+
+                    // verrouille seulement si onset, ou si aucune corde n'est verrouillé
+                    if (isOnset || lockedIndexRef.current === null) {
+                        lockedIndexRef.current = note.index;
+                        smoothedCentsRef.current = note.cents;
+                    } else if (lockedIndexRef.current === note.index) {
+                        // même corde : on lisse la valeur (évite que l'aiguille tremble)
+                        smoothedCentsRef.current = smoothedCentsRef.current * 0.7 + note.cents * 0.3;
+                    }
+                    // on fait en sorte que la note ne change pas tout le temps, donc quand il n'y a pas d'attaque, 
+                    // on reste sur la même note
+
+                    setPitch(freq);
+                    setClarity(clarity);
+                    setLockedIndex(lockedIndexRef.current);
+                    setCentsOff(smoothedCentsRef.current);
+                } else {
+                    silenceCounterRef.current++;
+                    // pas sûr de ça
+                    lockedIndexRef.current = null;
+                }
+            } else {
+                silenceCounterRef.current++;
+                if (silenceCounterRef.current > 30) { // ~0.5s à 60fps
+                    lockedIndexRef.current = null; // déverrouille après silence prolongé
+                    setLockedIndex(null)
+                    setCentsOff(0)
+                    smoothedCentsRef.current = 0;
+                }
             }
 
             rafRef.current = requestAnimationFrame(detect);
         }
+
         detect();
     }
 
@@ -72,7 +114,8 @@ export default function TunerClient() {
         return `${notes[tones % 12]}${octave}`;
     }
 
-    function getVolume(buffer) {
+    function getRMS(buffer) {
+        /* volume */
         let sum = 0;
         for (let i = 0; i < buffer.length; i++) {
             sum += buffer[i] * buffer[i];
@@ -90,12 +133,8 @@ export default function TunerClient() {
                 closest = i;
             }
         });
+        if (Math.abs(minCents) > 200) return null
         return { index: closest, cents: minCents };
-    }
-
-    function centsOff(freq) {
-        const semitones = 12 * Math.log2(freq / 440) + 9;
-        return (semitones - Math.round(semitones)) * 100;
     }
 
     const stop = () => {
@@ -112,12 +151,19 @@ export default function TunerClient() {
     return (
         <div className="relative flex flex-col gap-2 w-full justify-center items-center">
             <Button className="absolute top-5 left-5" onClick={() => router.push('/tools')}>&larr; Retour</Button>
-            <p className="text-xl">Note : {pitch && findNoteFromFrequency(pitch)}</p>
-            <p>{pitch && pitch.toFixed(1)} Hz - <span className={`${centsOff(pitch) >= -2 && centsOff(pitch) <= 2 ? 'text-green-500' : 'text-red-500'}`}>{pitch && centsOff(pitch)}</span></p>
-            <GuitarStrings closestNote={findClosestString(pitch, tunings["E standard"])} tuning={tunings["E standard"]} />
+            <p className="text-xl">
+                Note : {findNoteFromFrequency(pitch)}
+            </p>
+            <p>{pitch && pitch.toFixed(1)} Hz</p>
+            <p className={`${Math.abs(centsOff) >= -2 && Math.abs(centsOff) <= 2 ? 'text-green-500' : 'text-red-500'}`}>{smoothedCentsRef && Math.abs(centsOff)}</p>
+            <GuitarStrings
+                currentNote={lockedIndex !== null ? tunings["E standard"].nameOctave[lockedIndex] : null}
+                tuning={tunings["E standard"]}
+            />
             <Button onClick={isListening ? stop : start}>
                 {isListening ? "Stop" : "Start"}
             </Button>
+
         </div>
     );
 }
