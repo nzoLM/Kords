@@ -2,6 +2,7 @@
 
 import { PitchDetector } from "pitchy";
 import { useState, useEffect, useRef } from "react";
+import gsap from "gsap";
 import { Button } from "./ui/button";
 import { useRouter } from "next/router";
 import GuitarStrings from "./ui/guitar-strings";
@@ -11,6 +12,7 @@ import { getGuitar, playGuitarNote } from "@/utils/guitar";
 // puis on calcule l’écart en cents avec 1200 × log₂(frq / fréquence_de_la_note)
 
 // Accordage de base (à personnaliser dans l'application)
+
 const tunings = {
     "E standard": {
         "name": ["E", "A", "D", "G", "B", "e"],
@@ -33,6 +35,13 @@ export default function TunerClient() {
     const lastRMSRef = useRef(0);
     const silenceCounterRef = useRef(0);
     const smoothedCentsRef = useRef(0);
+
+    const containerRef = useRef(null);
+    const noteRef = useRef(null);
+    const needleRef = useRef(null);
+    const meterGlowRef = useRef(null);
+    const listeningDotRef = useRef(null);
+    const prevNoteRef = useRef(null);
 
 
     const start = async () => {
@@ -87,13 +96,11 @@ export default function TunerClient() {
                     setCentsOff(smoothedCentsRef.current);
                 } else {
                     silenceCounterRef.current++;
-                    // pas sûr de ça
-                    lockedIndexRef.current = null;
                 }
             } else {
                 silenceCounterRef.current++;
-                if (silenceCounterRef.current > 30) { // ~0.5s à 60fps
-                    lockedIndexRef.current = null; // déverrouille après silence prolongé
+                if (silenceCounterRef.current > 30) { 
+                    lockedIndexRef.current = null; 
                     setLockedIndex(null)
                     setCentsOff(0)
                     smoothedCentsRef.current = 0;
@@ -103,7 +110,7 @@ export default function TunerClient() {
             rafRef.current = requestAnimationFrame(detect);
         }
 
-        detect();
+        detect();   
     }
 
     const findNoteFromFrequency = (pitch) => {
@@ -147,20 +154,117 @@ export default function TunerClient() {
     useEffect(() => {
         getGuitar();
     }, [])
+    
+    useEffect(() => {
+        const ctx = gsap.context(() => {
+            gsap.fromTo(
+                ".tuner-anim",
+                { opacity: 0, y: 24 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.6,
+                    stagger: 0.1,
+                    ease: "power3.out",
+                    clearProps: "opacity,transform",
+                }
+            );
+        }, containerRef);
+        return () => ctx.revert();
+    }, []);
+
+    const displayedNote = pitch ? findNoteFromFrequency(pitch) : null;
+
+    useEffect(() => {
+        if (displayedNote && displayedNote !== prevNoteRef.current) {
+            gsap.fromTo(
+                noteRef.current,
+                { scale: 1.35, opacity: 0.4 },
+                { scale: 1, opacity: 1, duration: 0.35, ease: "back.out(2.5)" }
+            );
+        }
+        prevNoteRef.current = displayedNote;
+    }, [displayedNote]);
+
+    const inTune = Math.abs(centsOff) <= 2;
+    useEffect(() => {
+        const clamped = Math.max(-50, Math.min(50, centsOff));
+        gsap.to(needleRef.current, {
+            left: `${50 + clamped}%`,
+            duration: 0.25,
+            ease: "power2.out",
+        });
+    }, [centsOff]);
+
+    useEffect(() => {
+        gsap.killTweensOf(meterGlowRef.current);
+        if (inTune && lockedIndex !== null) {
+            gsap.fromTo(
+                meterGlowRef.current,
+                { opacity: 0.6, scale: 1 },
+                {
+                    opacity: 0,
+                    scale: 1.8,
+                    duration: 0.8,
+                    repeat: -1,
+                    ease: "power1.out",
+                }
+            );
+        } else {
+            gsap.set(meterGlowRef.current, { opacity: 0 });
+        }
+    }, [inTune, lockedIndex]);
+
+    useEffect(() => {
+        if (!listeningDotRef.current) return;
+        gsap.killTweensOf(listeningDotRef.current);
+        gsap.to(listeningDotRef.current, {
+            opacity: 0.3,
+            scale: 0.7,
+            duration: 0.6,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+        });
+    }, [isListening]);
 
     return (
-        <div className="relative flex flex-col gap-2 w-full justify-center items-center">
-            <Button className="absolute top-5 left-5" onClick={() => router.push('/tools')}>&larr; Retour</Button>
-            <p className="text-xl">
-                Note : {findNoteFromFrequency(pitch)}
+        <div ref={containerRef} className="relative flex flex-col gap-4 w-full justify-center items-center">
+            <Button className="absolute top-5 left-5 tuner-anim" onClick={() => router.push('/tools')}>&larr; Retour</Button>
+
+            <p ref={noteRef} className="tuner-anim text-4xl font-semibold">
+                {displayedNote ? displayedNote : "-"}
             </p>
-            <p>{pitch && pitch.toFixed(1)} Hz</p>
-            <p className={`${Math.abs(centsOff) >= -2 && Math.abs(centsOff) <= 2 ? 'text-green-500' : 'text-red-500'}`}>{smoothedCentsRef && Math.abs(centsOff)}</p>
-            <GuitarStrings
-                currentNote={lockedIndex !== null ? tunings["E standard"].nameOctave[lockedIndex] : null}
-                tuning={tunings["E standard"]}
-            />
-            <Button onClick={isListening ? stop : start}>
+
+            <div className="tuner-anim relative w-64 h-3 bg-muted rounded-full overflow-visible">
+                <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-0.5 bg-foreground/40" />
+                <div
+                    ref={meterGlowRef}
+                    className="absolute top-1/2 left-1/2 w-4 h-4 rounded-full bg-success opacity-0 -translate-x-1/2 -translate-y-1/2"
+                />
+                <div
+                    ref={needleRef}
+                    className={`absolute top-1/2 w-3 h-3 rounded-full -translate-x-1/2 -translate-y-1/2 shadow-md transition-colors duration-200 ${inTune ? 'bg-success' : 'bg-destructive'}`}
+                    style={{ left: "50%" }}
+                />
+            </div>
+
+            <p className={`tuner-anim ${inTune ? 'text-green-500' : 'text-red-500'}`}>
+                {smoothedCentsRef && Math.abs(centsOff)}
+            </p>
+
+            <div className="tuner-anim">
+                <GuitarStrings
+                    centsOff={Math.abs(centsOff)}
+                    currentNote={lockedIndex !== null ? tunings["E standard"].nameOctave[lockedIndex] : null}
+                    tuning={tunings["E standard"]}
+                />
+            </div>
+
+            <Button className="tuner-anim relative" onClick={isListening ? stop : start}>
+                {isListening && (
+                    <span ref={listeningDotRef} className="w-2 h-2 rounded-full bg-destructive" />
+                )}
                 {isListening ? "Stop" : "Start"}
             </Button>
 
