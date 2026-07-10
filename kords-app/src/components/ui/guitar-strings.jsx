@@ -1,6 +1,6 @@
 "use client";
 import { getGuitar, loadGuitar, playGuitarNote } from "@/utils/guitar"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import gsap from "gsap";
 
 export default function GuitarStrings({ tuning, currentNote, centsOff }) {
@@ -19,7 +19,7 @@ export default function GuitarStrings({ tuning, currentNote, centsOff }) {
     }, [])
 
     // entrée en cascade des cordes
-    useEffect(() => {
+    useLayoutEffect(() => {
         gsap.fromTo(
             buttonRefs.current,
             { opacity: 0, y: 16, scale: 0.8 },

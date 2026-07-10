@@ -1,7 +1,7 @@
 "use client";
 
 import { PitchDetector } from "pitchy";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { Button } from "./ui/button";
 import { useRouter } from "next/router";
@@ -155,7 +155,7 @@ export default function TunerClient() {
         getGuitar();
     }, [])
     
-    useEffect(() => {
+    useLayoutEffect(() => {
         const ctx = gsap.context(() => {
             gsap.fromTo(
                 ".tuner-anim",
@@ -230,7 +230,7 @@ export default function TunerClient() {
 
     return (
         <div ref={containerRef} className="relative flex flex-col gap-4 w-full justify-center items-center">
-            <Button className="absolute top-5 left-5 tuner-anim" onClick={() => router.push('/tools')}>&larr; Retour</Button>
+            <Button className="absolute top-5 left-5 tuner-anim transition-none" onClick={() => router.push('/tools')}>&larr; Retour</Button>
 
             <p ref={noteRef} className="tuner-anim text-4xl font-semibold">
                 {displayedNote ? displayedNote : "-"}
@@ -261,7 +261,7 @@ export default function TunerClient() {
                 />
             </div>
 
-            <Button className="tuner-anim relative" onClick={isListening ? stop : start}>
+            <Button className="tuner-anim relative transition-none" onClick={isListening ? stop : start}>
                 {isListening && (
                     <span ref={listeningDotRef} className="w-2 h-2 rounded-full bg-destructive" />
                 )}
