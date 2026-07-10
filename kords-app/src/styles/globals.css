@@ -27,7 +27,7 @@
   /* Gris moyen */
   --secondary-foreground: #ffffff;
 
-  --accent: #00ad74;
+  --success: #00ad74;
   /* Vert success */
   --accent-foreground: #ffffff;
 
@@ -115,6 +115,7 @@ button {
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
+  --color-success: var(--success);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
@@ -141,22 +142,20 @@ button {
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --background: #000000;
     --foreground: #FFFFFF;
     --primary: #ffffff;
-    /* Blanc */
+    
     --primary-foreground: #000000;
 
     --secondary: #5E5E5E;
     --secondary-foreground: #ffffff;
 
     --accent: #C6C6C6;
-    /* Gris clair en accent neutre */
     --accent-foreground: #000000;
 
-    /* Les couleurs fonctionnelles restent identiques */
     --destructive: #df3232;
     --destructive-foreground: #ffffff;
 
@@ -179,7 +178,7 @@ button {
     --popover: #303030;
     --popover-foreground: #ffffff;
   }
-}
+} */
 
 #knob-circle {
   fill: var(--secondary)

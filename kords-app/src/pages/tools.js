@@ -1,11 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { TbMetronome } from "react-icons/tb";
-
+import { MdMusicNote } from "react-icons/md";
 const TOOLS = [
     { name: "Metronome", icon : <TbMetronome className="w-10 h-10"/>, link:"/metronome" },
-    { name: "Accordeur", icon : "", link:"/tuner" },
-    { name: "Accords", icon : "", link:"/chords" },
+    { name: "Accordeur", icon : <MdMusicNote className="w-10 h-10"  />, link:"/tuner" },
+    // { name: "Accords", icon : "", link:"/chords" },
 ]
 
 export default function Tools() {
