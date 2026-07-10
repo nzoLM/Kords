@@ -58,13 +58,27 @@ export default function GuitarStrings({ tuning, currentNote, centsOff }) {
         });
     }, [currentNote, centsOff, tuning])
 
+    function handleStringClick(i, note) {
+        if (!(ready && guitar != null)) return;
+
+        playGuitarNote(note, guitar);
+
+        const btn = buttonRefs.current[i];
+        if (btn) {
+            gsap.killTweensOf(btn);
+            gsap.timeline()
+                .to(btn, { scale: 1.4, duration: 0.3, ease: "expo.out" })
+                .to(btn, { scale: 1, duration: 0.15, ease: "expo.out" });
+        }
+    }
+
     return (
         <div>
             <div className="flex gap-2 ">
                 {tuning.nameOctave.map((note, i) => (
                     <button disabled={ready && guitar != null ? "" : "disabled"} key={i}
                         ref={(el) => (buttonRefs.current[i] = el)}
-                        onClick={() => ready && guitar != null ? playGuitarNote(note, guitar) : ""}
+                        onClick={() => handleStringClick(i, note)}
                         className={`disabled:hover:bg-background disabled:hover:text-foreground
                             disabled:opacity-50 cursor-pointer disabled:hover:cursor-not-allowed
                             flex rounded-full w-12 h-12 border hover:bg-foreground hover:text-background ${(currentNote == note && centsOff >= 2) ? "bg-warning" : ""} ${(currentNote == note && centsOff <= 2) ? "bg-success" : ""}`}

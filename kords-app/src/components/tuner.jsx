@@ -165,7 +165,7 @@ export default function TunerClient() {
                     y: 0,
                     duration: 0.6,
                     stagger: 0.1,
-                    ease: "power3.out",
+                    ease: "bounce.out",
                     clearProps: "opacity,transform",
                 }
             );
