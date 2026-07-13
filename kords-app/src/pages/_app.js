@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState, useLayoutEffect, useRef, useEffect } from "react";
+import { useState, useLayoutEffect, useRef } from "react";
 import Navbar from "@/components/navbar";
 import PostForm from "@/components/post-form";
 import gsap from "gsap";
@@ -12,25 +12,31 @@ export default function App({ Component, pageProps }) {
   const router = useRouter();
   const showNavbar = !NO_NAVBAR_PAGES.includes(router.pathname);
   const [postForm, setPostForm] = useState(false);
+  const [showPostForm, setShowPostForm] = useState(false);
   const postRef = useRef(null)
 
-  useEffect(() => {
-    if (postRef.current == null) {
-      gsap.fromTo(
-        postRef.current,
-        { opacity: 1, ease: "power1.out", duration: 0.3 },
-        { opacity: 0, ease: "power1.out", duration: 0.5 },
+  useLayoutEffect(() => {
+    if (postForm) setShowPostForm(true);
+  }, [postForm])
 
-      );
- 
-    } else {
+  useLayoutEffect(() => {
+    if (!showPostForm || !postRef.current) return;
+
+    if (postForm) {
       gsap.fromTo(
         postRef.current,
-        { opacity: 0, ease: "power1.out", duration: 0.3 },
-        { opacity: 1, ease: "power1.out", duration: 0.3 },
+        { opacity: 0 },
+        { opacity: 1, duration: 0.3, ease: "power1.out" },
       );
+    } else {
+      gsap.to(postRef.current, {
+        opacity: 0,
+        duration: 0.3,
+        ease: "power1.out",
+        onComplete: () => setShowPostForm(false),
+      });
     }
-  }, [])
+  }, [postForm, showPostForm])
 
   return (
     <>
@@ -39,20 +45,14 @@ export default function App({ Component, pageProps }) {
       </Head>
       {showNavbar ? (
         <div className="flex min-h-screen">
-          {postForm && (
+          {showPostForm && (
             <div
               ref={postRef}
               className="z-50 top-0 fixed w-full h-full bg-black/60 backdrop-blur-sm"
-              onClick={() => {
-                setTimeout(() => setPostForm(false), 300)
-                setPostForm(false)
-              }}
+              onClick={() => setPostForm(false)}
             >
               <div onClick={(e) => e.stopPropagation()}>
-                <PostForm closeForm={() => {
-                  setTimeout(() => setPostForm(false), 1000)
-                  setPostForm(false)
-                }} />
+                <PostForm closeForm={() => setPostForm(false)} />
               </div>
             </div>
           )}
