@@ -2,6 +2,23 @@ import { Request, Response } from 'express';
 import { prisma } from '../index';
 import bcrypt from 'bcrypt';
 
+export const getCurrentConnectedUser = async (req: Request, res: Response) => {
+    try {
+        const id = req.user!.userId;
+
+        const user = await prisma.user.findUnique({
+            where: { id },
+            omit: { password: true }
+        });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        return res.json(user);
+    } catch (error) {
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
 export const getUsers = async (req: Request, res: Response) => {
     try {
         const users = await prisma.user.findMany({
@@ -35,6 +52,30 @@ export const getUserById = async (req: Request, res: Response) => {
     }
 }
 
+export const updateCurrentUser = async (req: Request, res: Response) => {
+    try {
+
+        const id = req.user?.userId;
+
+        if (typeof id != "string") {
+            return res.status(400).json({ error: 'Invalid user ID' })
+        }
+        const { email, username, bio, location } = req.body;
+
+        const user = await prisma.user.update({
+            where: { id },
+            data: { email, username, bio, location },
+            omit: { password: true }
+        })
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        return res.json(user);
+    } catch (error) {
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
 export const updateUser = async (req: Request, res: Response) => {
     try {
         const { id } = req.params
@@ -42,11 +83,11 @@ export const updateUser = async (req: Request, res: Response) => {
         if (typeof id != "string") {
             return res.status(400).json({ error: 'Invalid user ID' })
         }
-        const { email, username } = req.body;
+        const { email, username, bio, location } = req.body;
 
         const user = await prisma.user.update({
             where: { id },
-            data: { email, username },
+            data: { email, username, bio, location },
             omit: { password: true }
         })
         if (!user) {
@@ -159,4 +200,8 @@ export const getUserFollowing = async (req: Request, res: Response) => {
     } catch (error) {
         return res.status(500).json({ error: 'Internal server error' });
     }
+}
+
+export const forgotPassword = async (req: Request, res : Response) => {
+
 }

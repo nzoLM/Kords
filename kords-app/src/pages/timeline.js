@@ -1,123 +1,108 @@
-import Navbar from "@/components/navbar"
 import Post from "@/components/post"
 import { useState, useEffect } from "react";
-import PostForm from "@/components/post-form";
 import CommentForm from "@/components/comment-form";
-import Router, { useRouter } from "next/router";
+
+const CATEGORIES = {"Général" : "GENERAL", "Apprentissage" : "LEARNING", "Guitare" : "GUITAR", "Tutoriel" :"TUTORIAL"}
+
 export default function Timeline() {
-    const [postForm, setPostForm] = useState(false);
     const [commentForm, setCommentForm] = useState(false);
     const [selectedPost, setSelectedPost] = useState(null);
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [activeCategory, setActiveCategory] = useState("GENERAL");
 
     const openCommentForm = (post) => {
         setSelectedPost(post);
         setCommentForm(true);
-        setPostForm(false);
     };
-    const router = useRouter();
 
     useEffect(() => {
         const fetchPosts = async () => {
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/post`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
+                    headers: { 'Content-Type': 'application/json' }
                 });
-
-                if (!response.ok) {
-                    throw new Error('Erreur lors de la récupération des posts');
-                }
-
+                if (!response.ok) throw new Error('Erreur lors de la récupération des posts');
                 const data = await response.json();
                 setPosts(data);
-                console.log(data)
             } catch (err) {
                 setError(err.message);
             } finally {
                 setLoading(false);
             }
         };
-
         fetchPosts();
     }, []);
 
-    if (loading) {
-        return (
-            <div className="flex min-h-screen">
-                <Navbar onClick={() => setPostForm(true)}></Navbar>
-                <div className="flex items-center justify-center w-full">
-                    <p>Chargement des publications...</p>
-                </div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="flex min-h-screen">
-                <Navbar onClick={() => setPostForm(true)}></Navbar>
-                <div className="flex items-center justify-center w-full">
-                    <p className="text-red-500">Erreur : {error}</p>
-                </div>
-            </div>
-        );
-    }
-
     return (
-        <div className="flex min-h-screen">
-            {
-                postForm && !commentForm &&
-                <div className="z-50 top-0 fixed w-full h-full bg-black/50">
-                    <PostForm closeForm={() => setPostForm(false)}></PostForm>
+        <main className="flex flex-col flex-1 border-r border-gray-700">
+            {commentForm && selectedPost && (
+                <div
+                    className="z-50 left-0 top-0 fixed w-screen h-full backdrop-blur-sm"
+                    onClick={() => { setCommentForm(false); setSelectedPost(null); }}
+                >
+                    <div onClick={e => e.stopPropagation()}>
+                        <CommentForm
+                            post={selectedPost}
+                            closeForm={() => { setCommentForm(false); setSelectedPost(null); }}
+                        />
+                    </div>
                 </div>
-            }
-            {
-                commentForm && !postForm && selectedPost &&
-                <div className="z-50 top-0 fixed w-full h-full bg-black/50">
-                    <CommentForm
-                        post={selectedPost}
-                        closeForm={() => {
-                            setCommentForm(false);
-                            setSelectedPost(null);
-                        }}
-                    />
+            )}
+
+            <div className="sticky top-0 bg-background/80 backdrop-blur-sm border-b border-gray-700 z-10">
+                <div className="flex">
+                    {Object.keys(CATEGORIES).map((cat, i) => (
+                        <button
+                            key={i}
+                            onClick={() => setActiveCategory(CATEGORIES[cat])}
+                            className={`flex-1 py-3 text-sm font-medium transition border-b-2 cursor-pointer ${activeCategory === CATEGORIES[cat]
+                                    ? "border-primary text-foreground"
+                                    : "border-transparent text-muted-foreground hover:text-foreground hover:bg-white/5"
+                                }`}
+                        >
+                            {cat}
+                        </button>
+                    ))}
                 </div>
-            }
-            <Navbar onClick={() => setPostForm(true)}></Navbar>
-            <div className="flex flex-col w-3/5">
-                <div className="sticky top-0 bg-background flex justify-around p-4 border-b border-gray-700">
-                    <button>
-                        General
-                    </button>
+            </div>
+
+            {loading && (
+                <div className="flex items-center justify-center flex-1 py-20">
+                    <p className="text-muted-foreground text-sm">Chargement...</p>
                 </div>
-                <div className="flex flex-col">
+            )}
+
+            {error && (
+                <div className="flex items-center justify-center flex-1 py-20">
+                    <p className="text-red-400 text-sm">Erreur : {error}</p>
+                </div>
+            )}
+
+            {!loading && !error && (
+                <div className="flex flex-col divide-y divide-gray-700">
                     {posts.length === 0 ? (
-                        <p className="p-4">Aucune publication pour le moment</p>
+                        <p className="p-8 text-center text-muted-foreground text-sm">Aucune publication pour le moment</p>
                     ) : (
                         posts.map((post) => (
-                            <div key={post.id} className="border-b border-gray-700">
-                                <Post
-                                    id={post.id}
-                                    title={post.title}
-                                    content={post.content}
-                                    mediaUrl={post.mediaUrl}
-                                    mediaType={post.mediaType}
-                                    author={post.author.username}
-                                    reactions={post.reactions}
-                                    comments={post.comments}
-                                    createComment={(e) => {
-                                        openCommentForm(post)}
-                                    }
-                                />
-                            </div>
+                            post.category === activeCategory &&
+                            <Post
+                                key={post.id}
+                                id={post.id}
+                                title={post.title}
+                                content={post.content}
+                                mediaUrl={post.mediaUrl}
+                                mediaType={post.mediaType}
+                                author={post.author.username}
+                                reactions={post.reactions}
+                                comments={post.comments}
+                                createComment={() => openCommentForm(post)}
+                            />
                         ))
                     )}
                 </div>
-            </div>
-        </div>
+            )}
+        </main>
     )
 }

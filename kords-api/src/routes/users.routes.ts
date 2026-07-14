@@ -4,6 +4,8 @@ import { authenticate } from "../middleware/auth";
 const router = Router();
 
 router.get('/', controller.getUsers)
+router.get("/me", authenticate, controller.getCurrentConnectedUser);
+router.put("/me", authenticate, controller.updateCurrentUser)
 router.get("/:id", controller.getUserById);
 router.get("/:id/followers", controller.getUserFollowers)
 router.get("/:id/following", controller.getUserFollowing)

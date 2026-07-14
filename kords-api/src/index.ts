@@ -17,7 +17,10 @@ app.use(cors())
 //   credentials: true
 // }));
 
-app.use(express.json())
+app.use((req, res, next) => {
+  if (req.headers['content-type']?.startsWith('multipart/form-data')) return next();
+  express.json()(req, res, next);
+})
 app.use("/api", routes)
 
 app.listen(8081, () =>

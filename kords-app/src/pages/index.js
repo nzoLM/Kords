@@ -1,58 +1,127 @@
 import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { isAuthenticated } from "@/utils/auth";
 import { useEffect } from "react";
+import { Users, MapPin, Guitar } from "lucide-react";
 
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
-
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
-
-
+const features = [
+  {
+    icon: <Guitar size={40} className="text-primary" />,
+    title: "Outils de guitariste",
+    description: "Métronome, accordeur, éditeur de tablatures — tout ce dont tu as besoin pour progresser, au même endroit.",
+  },
+  {
+    icon: <Users size={40} className="text-primary" />,
+    title: "Une communauté qui te ressemble",
+    description: "Partage tes covers, tes créations, tes progrès. Reçois des conseils de gens qui sont passés par là.",
+  },
+  {
+    icon: <MapPin size={40} className="text-primary" />,
+    title: "Trouve des guitaristes près de chez toi",
+    description: "Grâce à la carte interactive, rencontre d'autres passionnés pour jouer ensemble ou collaborer.",
+  },
+];
 
 export default function Home() {
   const router = useRouter();
-  
-  useEffect( () => {
-    if (isAuthenticated()){
-      router.push("timeline");
+
+  useEffect(() => {
+    if (isAuthenticated()) {
+      router.push("/timeline");
     }
-  }
+  }, [router]);
 
-  )
   return (
-    <div className="min-h-screen justify-center items-center flex">
-      <div className="absolute top-2 left-1/2 -translate-x-1/2">
-        <Image alt="Logo Kords" src={"./LOGO-white.svg"} width={100} height={100} style={{ color: "#FFFFFF" }} className="fill-white" />
-      </div>
-      <div className="flex flex-col flex-1/2 justify-center items-center h-full">
-        <h1 className="font-[BBTMartires] text-7xl text-center">Welcome to Kords !</h1>
+    <div className="min-h-screen flex flex-col">
 
-      </div>
-      <div className="flex flex-1/2 flex-col gap-4">
-        <div className="flex justify-around items-center">
-          <div className="flex flex-col items-center gap-2 text-center w-1/2">
-            <p className="text-sm">Déjà inscrit ? Connectez vous !</p>
-            <Button onClick={() => router.push("/login")} className={"w-fit cursor-pointer font-bold"} >Log in</Button>
-          </div>
-          <div className="flex flex-col items-center gap-2 text-center w-1/2">
-            <p className="text-sm">Vous n'avez pas de compte ? Inscrivez-vous !</p>
-            <Button onClick={() => router.push("/signup")} className={"w-fit cursor-pointer font-bold"}>Sign up</Button>
+      <header className="flex items-center justify-between px-8 py-4 border-b border-gray-700">
+        <Image alt="Logo Kords" src="/Logo-title.svg" width={120} height={40} />
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            onClick={() => router.push("/login")}
+            className="cursor-pointer font-semibold border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+          >
+            Se connecter
+          </Button>
+          <Button
+            onClick={() => router.push("/signup")}
+            className="cursor-pointer font-semibold"
+          >
+            S'inscrire
+          </Button>
+        </div>
+      </header>
 
+      <section className="grid grid-cols-2">
+        <div className="flex flex-col items-left justify-left text-left px-6 py-24 gap-6">
+          <p className="text-primary text-sm font-semibold uppercase ">
+            La plateforme des guitaristes autodidactes
+          </p>
+          <h1 className="font-[BBTMartires] text-6xl md:text-8xl leading-tight max-w-3xl">
+            Welcome to Kords
+          </h1>
+          <p className="text-muted-foreground text-lg max-w-xl">
+            Apprends, partage et rencontre d'autres passionnés. Que tu sois débutant ou que tu joues depuis des années, Kords est fait pour toi.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 mt-4">
+            <Button
+              onClick={() => router.push("/signup")}
+              className="cursor-pointer font-bold text-base px-8 py-5"
+            >
+              Rejoindre Kords
+            </Button>
+            <Link href="/timeline">
+              <Button
+                variant="outline"
+                className="cursor-pointer font-semibold text-base px-8 py-5 border-gray-600 text-muted-foreground hover:text-foreground"
+              >
+                Découvrir →
+              </Button>
+            </Link>
           </div>
         </div>
-        <div className="flex justify-center">
-          <Link className="no-underline hover:underline transition" href={"/timeline"}>Explorer en tant qu'invité</Link>
+        <div className="flex text-center items-center justify-center">
+          <p className="italic">Emplacement des mockups de l'application</p>
         </div>
-      </div>
+      </section>
+
+      <section className="px-8 py-16 border-t border-gray-700">
+        <h2 className="text-center text-sm font-bold mb-12 text-muted-foreground uppercase">
+          Tout ce qu'il te faut pour progresser
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mx-auto p-2">
+          {features.map((f) => (
+            <div
+              key={f.title}
+              className="flex flex-col gap-3 p-6 "
+            >
+              <span>{f.icon}</span>
+              <h3 className="font-bold text-lg">{f.title}</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">{f.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="flex flex-col items-center gap-4 py-20 px-6 text-center border-t border-gray-700">
+        <h2 className="font-[BBTMartires] text-4xl">Prêt à jouer ?</h2>
+        <p className="text-muted-foreground max-w-md">
+          Rejoins des centaines de guitaristes et commence à partager ta passion aujourd'hui.
+        </p>
+        <Button
+          onClick={() => router.push("/signup")}
+          className="cursor-pointer font-bold text-base px-10 py-5 mt-2"
+        >
+          Créer un compte gratuit
+        </Button>
+      </section>
+
+      <footer className="text-center text-muted-foreground text-xs py-6 border-t border-gray-700">
+        © {new Date().getFullYear()} Kords — La plateforme des guitaristes autodidactes
+      </footer>
     </div>
   );
 }
