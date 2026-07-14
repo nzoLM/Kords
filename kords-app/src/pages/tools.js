@@ -14,9 +14,9 @@ export default function Tools() {
         <div className="grid grid-cols-2 w-full">
             {
                 TOOLS.map((tool) => (
-                    <Link key={tool.name} href={"/tools" + tool.link} className="flex p-4 gap-3 items-center justify-center border border-border hover:bg-white/5">
-                        <span className="text-foreground">{tool.name} </span>
-                        {tool.icon}
+                    <Link key={tool.name} href={"/tools" + tool.link} className="group flex p-4 gap-3 items-center justify-center border border-border transition-colors duration-300 ease-out hover:bg-white/5">
+                        <span className="flex justify-center items-center text-foreground transition-transform duration-300 ease-out group-hover:scale-110">{tool.name} {tool.icon}</span>
+                        {/* <span className="transition-transform duration-300 ease-out group-hover:scale-110"></span> */}
                     </Link>
                 ))
             }
